@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import JSZip from "jszip";
 import { jsPDF } from "jspdf";
 import {
@@ -14,6 +14,7 @@ import {
   Lock,
   Menu,
   Plus,
+
   Scissors,
   ShieldCheck,
   Sparkles,
@@ -39,6 +40,7 @@ type Screen =
 type ToolCategory = "all" | "optimize" | "edit" | "convert" | "security";
 type WatermarkStyle = "stamp" | "diagonalBand" | "repeat" | "horizontalBand";
 type FilterPreset = "none" | "gray" | "sepia" | "warm" | "cool";
+type Language = "ko" | "en" | "ja" | "zh";
 
 type UploadedImage = {
   id: string;
@@ -145,6 +147,96 @@ const tools: ToolItem[] = [
     icon: <Lock size={22} />,
   },
 ];
+
+const languageLabels: Record<Language, string> = {
+  ko: "한국어",
+  en: "English",
+  ja: "日本語",
+  zh: "中文",
+};
+
+const seoByLanguage: Record<Language, { title: string; description: string; htmlLang: string; locale: string }> = {
+  ko: {
+    title: "FileXact 파일잭트 - 정확하고 빠른 온라인 이미지·PDF 도구",
+    description: "이미지 압축, 크기 조절, JPG 변환, 이미지 PDF 변환, 워터마크, 개인정보 가리기를 브라우저에서 빠르게 처리하는 FileXact 파일 도구입니다.",
+    htmlLang: "ko",
+    locale: "ko_KR",
+  },
+  en: {
+    title: "FileXact - Fast Online Image and PDF Tools",
+    description: "Compress, resize, crop, convert images to JPG or PDF, add watermarks, and blur private information directly in your browser with FileXact.",
+    htmlLang: "en",
+    locale: "en_US",
+  },
+  ja: {
+    title: "FileXact - 高速オンライン画像・PDFツール",
+    description: "画像圧縮、サイズ変更、JPG変換、画像PDF変換、透かし追加、個人情報のぼかしをブラウザで素早く処理できるFileXactです。",
+    htmlLang: "ja",
+    locale: "ja_JP",
+  },
+  zh: {
+    title: "FileXact - 快速在线图片与PDF工具",
+    description: "使用 FileXact 在浏览器中快速完成图片压缩、尺寸调整、JPG转换、图片转PDF、添加水印和隐私信息模糊处理。",
+    htmlLang: "zh-CN",
+    locale: "zh_CN",
+  },
+};
+
+const copyDictionary: Record<Exclude<Language, "ko">, Record<string, string>> = {
+  en: {
+    "회원가입 없이 바로 사용": "Use instantly without signing up",
+    "정확하고 빠른": "Accurate and fast",
+    "온라인 이미지·PDF 도구": "online image and PDF tools",
+    "이미지 압축부터 PDF 변환까지, 오차 없이 빠르게 제출용 파일을 정리하세요.": "Organize submission-ready files quickly and accurately, from image compression to PDF conversion.",
+    "모두": "All", "최적화": "Optimize", "편집": "Edit", "변환": "Convert", "보안": "Security",
+    "이미지 압축": "Image compression", "이미지 크기 조절": "Resize image", "이미지 잘라내기": "Crop image", "JPG로 변환": "Convert to JPG", "이미지 PDF 변환": "Image to PDF", "간단 포토 에디터": "Simple photo editor", "워터마크 넣기": "Add watermark", "개인정보 가리기": "Hide private info",
+    "JPG, PNG, WebP 이미지를 용량 제한에 맞게 줄입니다.": "Reduce JPG, PNG, and WebP images to fit size limits.",
+    "가로·세로 픽셀 또는 비율로 이미지 크기를 조정합니다.": "Resize images by width, height, or ratio.",
+    "증명사진, 썸네일, 제출용 비율에 맞게 이미지를 자릅니다.": "Crop images for ID photos, thumbnails, and submission ratios.",
+    "PNG, WebP 이미지를 JPG 파일로 간단히 변환합니다.": "Easily convert PNG and WebP images to JPG files.",
+    "여러 장의 이미지를 하나의 PDF 파일로 묶습니다.": "Combine multiple images into one PDF file.",
+    "필터, 회전, 반전, 텍스트, 프레임을 적용합니다.": "Apply filters, rotation, flips, text, and frames.",
+    "이미지에 텍스트 워터마크를 추가합니다.": "Add text watermarks to images.",
+    "얼굴, 차량번호, 민감한 영역을 블러 처리합니다.": "Blur faces, license plates, and sensitive areas.",
+    "왜 FileXact인가요?": "Why FileXact?", "빠른 처리": "Fast processing", "개인정보 고려": "Privacy-aware", "제출 상황 특화": "Submission-focused",
+    "제출 파일 가이드": "Submission file guides", "전체 가이드 보기": "View all guides", "자세히 보기": "Read guide", "추천 사용 도구": "Recommended tools", "진행 순서": "Steps", "제출 전 체크 포인트": "Pre-submission checklist", "가이드 닫기": "Close guide",
+    "모든 도구로 돌아가기": "Back to all tools", "이미지 선택": "Select image", "여기에 이미지를 끌어와도 됩니다.": "You can also drag images here.",
+    "압축 설정": "Compression settings", "목표 용량": "Target size", "PDF 설정": "PDF settings", "JPG 설정": "JPG settings", "편집 설정": "Edit settings", "워터마크 설정": "Watermark settings", "가리기 설정": "Privacy blur settings",
+    "PDF 만들기": "Create PDF", "PDF 다운로드": "Download PDF", "PDF 미리보기": "PDF preview", "PDF 결과 미리보기": "PDF result preview", "A4": "A4", "이미지 크기": "Image size", "세로": "Portrait", "가로": "Landscape", "전체 보이기": "Fit entire image", "꽉 채우기": "Fill page",
+    "원본 이미지": "Original image", "결과 미리보기": "Result preview", "다운로드": "Download", "처리 결과": "Results", "ZIP 전체 다운로드": "Download all as ZIP", "폴더 저장": "Save to folder", "개별 다운로드": "Download file", "이미지 추가": "Add image", "드래그해서 순서 변경": "Drag to reorder",
+    "원본": "Original", "흑백": "Grayscale", "세피아": "Sepia", "따뜻하게": "Warm", "차갑게": "Cool", "회전": "Rotate", "좌우 반전": "Flip horizontal", "상하 반전": "Flip vertical", "밝기": "Brightness", "대비": "Contrast", "채도": "Saturation",
+    "텍스트 박스": "Text box", "추가": "Add", "프레임 / 저장": "Frame / save", "테두리 두께": "Border width", "테두리 색상": "Border color", "워터마크 문구": "Watermark text", "스타일": "Style", "기본 텍스트": "Basic text", "전체 대각선 띠": "Full diagonal band", "전체 반복": "Repeating pattern", "전체 가로띠": "Full horizontal band", "위치": "Position", "가운데": "Center", "투명도": "Opacity", "글자 크기": "Font size", "흐림 강도": "Blur strength",
+    "개인정보처리방침": "Privacy policy", "이용약관": "Terms of use", "문의하기": "Contact", "제품": "Products", "가이드": "Guides", "운영 안내": "Operation info", "언어 선택": "Language", "로그인": "Log in", "가입하기": "Sign up"
+  },
+  ja: {
+    "회원가입 없이 바로 사용": "登録なしですぐに使用", "정확하고 빠른": "正確で高速な", "온라인 이미지·PDF 도구": "オンライン画像・PDFツール", "이미지 압축부터 PDF 변환까지, 오차 없이 빠르게 제출용 파일을 정리하세요.": "画像圧縮からPDF変換まで、提出用ファイルを素早く正確に整理できます。",
+    "모두": "すべて", "최적화": "最適化", "편집": "編集", "변환": "変換", "보안": "保護", "이미지 압축": "画像圧縮", "이미지 크기 조절": "画像サイズ変更", "이미지 잘라내기": "画像切り抜き", "JPG로 변환": "JPGに変換", "이미지 PDF 변환": "画像をPDFに変換", "간단 포토 에디터": "簡単フォトエディター", "워터마크 넣기": "透かしを追加", "개인정보 가리기": "個人情報を隠す",
+    "왜 FileXact인가요?": "なぜFileXact？", "빠른 처리": "高速処理", "개인정보 고려": "プライバシー配慮", "제출 상황 특화": "提出用途に特化", "제출 파일 가이드": "提出ファイルガイド", "전체 가이드 보기": "すべてのガイドを見る", "자세히 보기": "詳しく見る", "추천 사용 도구": "おすすめツール", "진행 순서": "手順", "제출 전 체크 포인트": "提出前チェックポイント", "가이드 닫기": "ガイドを閉じる",
+    "모든 도구로 돌아가기": "すべてのツールに戻る", "이미지 선택": "画像を選択", "여기에 이미지를 끌어와도 됩니다.": "ここに画像をドラッグしても使えます。", "압축 설정": "圧縮設定", "목표 용량": "目標容量", "PDF 설정": "PDF設定", "JPG 설정": "JPG設定", "편집 설정": "編集設定", "워터마크 설정": "透かし設定", "가리기 설정": "ぼかし設定", "다운로드": "ダウンロード", "제품": "製品", "가이드": "ガイド", "운영 안내": "運営案内", "언어 선택": "言語選択", "로그인": "ログイン", "가입하기": "登録"
+  },
+  zh: {
+    "회원가입 없이 바로 사용": "无需注册，立即使用", "정확하고 빠른": "准确快速的", "온라인 이미지·PDF 도구": "在线图片与PDF工具", "이미지 압축부터 PDF 변환까지, 오차 없이 빠르게 제출용 파일을 정리하세요.": "从图片压缩到PDF转换，快速准确地整理提交文件。",
+    "모두": "全部", "최적화": "优化", "편집": "编辑", "변환": "转换", "보안": "安全", "이미지 압축": "图片压缩", "이미지 크기 조절": "调整图片尺寸", "이미지 잘라내기": "裁剪图片", "JPG로 변환": "转换为JPG", "이미지 PDF 변환": "图片转PDF", "간단 포토 에디터": "简易图片编辑器", "워터마크 넣기": "添加水印", "개인정보 가리기": "隐藏隐私信息",
+    "왜 FileXact인가요?": "为什么选择FileXact？", "빠른 처리": "快速处理", "개인정보 고려": "重视隐私", "제출 상황 특화": "面向提交场景", "제출 파일 가이드": "提交文件指南", "전체 가이드 보기": "查看全部指南", "자세히 보기": "查看详情", "추천 사용 도구": "推荐工具", "진행 순서": "操作步骤", "제출 전 체크 포인트": "提交前检查点", "가이드 닫기": "关闭指南",
+    "모든 도구로 돌아가기": "返回所有工具", "이미지 선택": "选择图片", "여기에 이미지를 끌어와도 됩니다.": "也可以将图片拖到这里。", "압축 설정": "压缩设置", "목표 용량": "目标大小", "PDF 설정": "PDF设置", "JPG 설정": "JPG设置", "편집 설정": "编辑设置", "워터마크 설정": "水印设置", "가리기 설정": "隐私模糊设置", "다운로드": "下载", "제품": "产品", "가이드": "指南", "운영 안내": "运营说明", "언어 선택": "选择语言", "로그인": "登录", "가입하기": "注册"
+  },
+};
+
+const reverseCopyDictionary = (() => {
+  const map: Record<string, string> = {};
+  (Object.keys(copyDictionary) as Exclude<Language, "ko">[]).forEach((lang) => {
+    Object.entries(copyDictionary[lang]).forEach(([ko, translated]) => {
+      map[translated] = ko;
+    });
+  });
+  return map;
+})();
+
+function translateCopy(text: string, language: Language) {
+  if (language === "ko") return reverseCopyDictionary[text] || text;
+  const baseText = reverseCopyDictionary[text] || text;
+  return copyDictionary[language][baseText] || baseText;
+}
 
 function makeId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -649,9 +741,11 @@ async function blurOneImage(item: UploadedImage, boxes: BlurBox[], blurStrength:
 
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
+  const [language, setLanguage] = useState<Language>("ko");
   return (
-    <div className="min-h-screen bg-white text-slate-950">
-      <Header setScreen={setScreen} />
+    <div className="min-h-screen bg-white text-slate-950" data-filexact-lang={language}>
+      <GlobalLanguageTranslator language={language} />
+      <Header setScreen={setScreen} language={language} setLanguage={setLanguage} />
       {screen === "home" && <HomeScreen setScreen={setScreen} />}
       {screen === "compress" && <CompressScreen goHome={() => setScreen("home")} />}
       {screen === "resize" && <ResizeScreen goHome={() => setScreen("home")} />}
@@ -668,7 +762,64 @@ function App() {
   );
 }
 
-function Header({ setScreen }: { setScreen: (screen: Screen) => void }) {
+function GlobalLanguageTranslator({ language }: { language: Language }) {
+  useEffect(() => {
+    const seo = seoByLanguage[language];
+    document.documentElement.lang = seo.htmlLang;
+    document.title = seo.title;
+
+    const upsertMeta = (selector: string, attrs: Record<string, string>) => {
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) {
+        element = document.createElement("meta");
+        document.head.appendChild(element);
+      }
+      Object.entries(attrs).forEach(([key, value]) => element?.setAttribute(key, value));
+    };
+
+    upsertMeta('meta[name="description"]', { name: "description", content: seo.description });
+    upsertMeta('meta[name="robots"]', { name: "robots", content: "index, follow" });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: seo.title });
+    upsertMeta('meta[property="og:description"]', { property: "og:description", content: seo.description });
+    upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: seo.locale });
+    upsertMeta('meta[property="og:url"]', { property: "og:url", content: "https://filexact.vercel.app/" });
+
+    const translateElement = () => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          const parent = node.parentElement;
+          if (!parent || ["SCRIPT", "STYLE", "TEXTAREA"].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        },
+      });
+      const nodes: Node[] = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const raw = node.textContent || "";
+        const trimmed = raw.trim();
+        if (!trimmed) return;
+        const translated = translateCopy(trimmed, language);
+        if (translated !== trimmed) node.textContent = raw.replace(trimmed, translated);
+      });
+      document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input[placeholder], textarea[placeholder]").forEach((element) => {
+        const current = element.getAttribute("placeholder") || "";
+        element.setAttribute("placeholder", translateCopy(current, language));
+      });
+      document.querySelectorAll<HTMLElement>("[title]").forEach((element) => {
+        const current = element.getAttribute("title") || "";
+        element.setAttribute("title", translateCopy(current, language));
+      });
+    };
+
+    translateElement();
+    const observer = new MutationObserver(translateElement);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [language]);
+  return null;
+}
+
+function Header({ setScreen, language, setLanguage }: { setScreen: (screen: Screen) => void; language: Language; setLanguage: (language: Language) => void }) {
   const [open, setOpen] = useState(false);
   const navItems: { label: string; screen: Screen }[] = [
     { label: "이미지 압축", screen: "compress" },
@@ -699,13 +850,29 @@ function Header({ setScreen }: { setScreen: (screen: Screen) => void }) {
         <div className="flex items-center gap-2">
           <button disabled className="hidden cursor-not-allowed px-3 py-2 text-sm font-black text-slate-300 sm:block">로그인</button>
           <button disabled className="hidden cursor-not-allowed rounded-2xl bg-slate-200 px-4 py-2 text-sm font-black text-slate-400 sm:block">가입하기</button>
-          <button disabled title="MVP 테스트 중에는 비활성화되어 있습니다." className="flex h-11 w-11 cursor-not-allowed items-center justify-center rounded-2xl bg-slate-100 text-slate-300"><Menu /></button>
+          <button onClick={() => setOpen((prev) => !prev)} title="언어 선택" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-2xl bg-slate-100 text-slate-900 hover:bg-slate-200"><Menu /></button>
         </div>
       </div>
       {open && (
-        <div className="border-t bg-white p-4 md:hidden">
-          <div className="rounded-2xl bg-slate-50 p-4 text-center text-sm font-bold text-slate-500">
-            모바일 메뉴는 MVP 테스트 중 비활성화되어 있습니다.
+        <div className="border-t bg-white p-4">
+          <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <div className="grid gap-2 sm:grid-cols-2 md:hidden">
+              {navItems.map((item) => (
+                <button key={item.label} onClick={() => go(item.screen)} className="rounded-2xl border bg-white px-4 py-3 text-left text-sm font-black hover:border-blue-500 hover:text-blue-600">
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="rounded-3xl bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-black text-slate-700">언어 선택</p>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {(Object.keys(languageLabels) as Language[]).map((item) => (
+                  <button key={item} onClick={() => setLanguage(item)} className={`rounded-2xl border px-4 py-3 text-sm font-black ${language === item ? "border-blue-500 bg-blue-600 text-white" : "bg-white hover:border-blue-500"}`}>
+                    {languageLabels[item]}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -915,7 +1082,7 @@ function GuideSection() {
             </span>
             <div>
               <p className="text-sm font-black text-blue-600">FileXact Guide</p>
-              <h2 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">파일 가이드</h2>
+              <h2 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">제출 파일 가이드</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500 md:text-base">
                 청약, 취업, 공공기관 첨부파일처럼 실제 제출 상황에 맞춘 안내 콘텐츠입니다.
               </p>
@@ -1487,6 +1654,8 @@ function PhotoEditorScreen({ goHome }: { goHome: () => void }) {
   if (!item) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><EditorControls filterPreset={filterPreset} setFilterPreset={setFilterPreset} rotation={rotation} setRotation={setRotation} flipX={flipX} setFlipX={setFlipX} flipY={flipY} setFlipY={setFlipY} brightness={brightness} setBrightness={setBrightness} contrast={contrast} setContrast={setContrast} saturation={saturation} setSaturation={setSaturation} addText={addText} active={active} updateBox={updateBox} borderWidth={borderWidth} setBorderWidth={setBorderWidth} borderColor={borderColor} setBorderColor={setBorderColor} saveFormat={saveFormat} setSaveFormat={setSaveFormat} /><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 편집 가능</button></div>}><UploadBox title="간단 포토 에디터" desc="필터, 회전, 반전, 텍스트, 프레임까지 브라우저에서 바로 편집합니다." icon={<Wand2 size={46} />} onFiles={handleFiles} /></ToolLayout>;
   return <ToolLayout goHome={goHome} side={<div className="space-y-5"><EditorControls filterPreset={filterPreset} setFilterPreset={setFilterPreset} rotation={rotation} setRotation={setRotation} flipX={flipX} setFlipX={setFlipX} flipY={flipY} setFlipY={setFlipY} brightness={brightness} setBrightness={setBrightness} contrast={contrast} setContrast={setContrast} saturation={saturation} setSaturation={setSaturation} addText={addText} active={active} updateBox={updateBox} borderWidth={borderWidth} setBorderWidth={setBorderWidth} borderColor={borderColor} setBorderColor={setBorderColor} saveFormat={saveFormat} setSaveFormat={setSaveFormat} /><button onClick={apply} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "적용 중..." : "편집 적용"}</button></div>}><ToolHeader title="간단 포토 에디터" sub={`${item.file.name} · ${item.width}×${item.height}`} onAdd={() => fileInputRef.current?.click()} /><input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-5 xl:grid-cols-2"><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">원본 이미지</p><img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" /></div><div className="rounded-3xl bg-white p-4"><div className="mb-3 flex justify-between"><p className="font-black">편집 미리보기</p><button onClick={addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">+ 텍스트 추가</button></div><div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50"><img src={item.previewUrl} className="max-h-full max-w-full object-contain" style={imgStyle} />{borderWidth > 0 && <div className="pointer-events-none absolute inset-6 rounded-2xl" style={{ border: `${borderWidth}px solid ${borderColor}` }} />}{textBoxes.map((box, index) => <div key={box.id} onMouseDown={(e) => startDrag(e, box, "move")} className={`absolute cursor-move rounded-xl border-2 border-dashed bg-black/25 px-2 py-1 text-center font-black text-white ${active?.id === box.id ? "border-blue-600" : "border-white/70"}`} style={{ left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%`, fontSize: `${Math.max(12, box.height * 1.5)}px` }}><span className="pointer-events-none flex h-full items-center justify-center">{box.text || `텍스트 ${index + 1}`}</span><button onClick={(e) => { e.stopPropagation(); setTextBoxes((p) => p.filter((v) => v.id !== box.id)); }} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow">×</button><div onMouseDown={(e) => startDrag(e, box, "resize")} className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600" /></div>)}</div><p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">텍스트 박스를 드래그해 옮기고, 오른쪽 아래 손잡이로 크기를 조절하세요.</p>{edited && <a href={edited.url} download={edited.downloadName} className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white">편집 이미지 다운로드</a>}</div></div></ToolLayout>;
 }
+
+
 
 function EditorControls(props: any) {
   const filters: [FilterPreset, string][] = [["none", "원본"], ["gray", "흑백"], ["sepia", "세피아"], ["warm", "따뜻하게"], ["cool", "차갑게"]];
