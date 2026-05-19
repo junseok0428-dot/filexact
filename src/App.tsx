@@ -915,7 +915,7 @@ function GuideSection() {
             </span>
             <div>
               <p className="text-sm font-black text-blue-600">FileXact Guide</p>
-              <h2 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">제출 파일 가이드</h2>
+              <h2 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">파일 가이드</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500 md:text-base">
                 청약, 취업, 공공기관 첨부파일처럼 실제 제출 상황에 맞춘 안내 콘텐츠입니다.
               </p>
