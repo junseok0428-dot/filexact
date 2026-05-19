@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import JSZip from "jszip";
 import { jsPDF } from "jspdf";
 import {
@@ -647,79 +647,8 @@ async function blurOneImage(item: UploadedImage, boxes: BlurBox[], blurStrength:
   } satisfies ResultImage;
 }
 
-
-const screenMeta: Record<Screen, { title: string; description: string }> = {
-  home: {
-    title: "FileXact - 정확하고 빠른 온라인 이미지·PDF 도구",
-    description: "FileXact는 이미지 압축, 크기 조절, JPG 변환, 이미지 PDF 변환, 워터마크, 개인정보 가리기를 제공하는 온라인 파일 도구입니다.",
-  },
-  compress: {
-    title: "이미지 압축 - FileXact",
-    description: "JPG, PNG, WebP 이미지를 제출 기준에 맞게 빠르게 압축하세요.",
-  },
-  resize: {
-    title: "이미지 크기 조절 - FileXact",
-    description: "가로·세로 픽셀 기준으로 이미지 크기를 조절하세요.",
-  },
-  crop: {
-    title: "이미지 잘라내기 - FileXact",
-    description: "증명사진, 썸네일, 제출용 비율에 맞게 이미지를 자르세요.",
-  },
-  jpg: {
-    title: "JPG로 변환 - FileXact",
-    description: "PNG, WebP 이미지를 JPG 파일로 간단히 변환하세요.",
-  },
-  imagepdf: {
-    title: "이미지 PDF 변환 - FileXact",
-    description: "여러 장의 이미지를 하나의 PDF 파일로 묶어 제출용 파일을 만드세요.",
-  },
-  editor: {
-    title: "간단 포토 에디터 - FileXact",
-    description: "필터, 회전, 반전, 텍스트, 프레임을 브라우저에서 바로 적용하세요.",
-  },
-  watermark: {
-    title: "워터마크 넣기 - FileXact",
-    description: "이미지에 텍스트 워터마크, 대각선 띠, 반복 패턴을 적용하세요.",
-  },
-  blur: {
-    title: "개인정보 가리기 - FileXact",
-    description: "얼굴, 차량번호, 민감한 영역을 블러 처리해 제출 전 파일을 정리하세요.",
-  },
-  privacy: {
-    title: "개인정보처리방침 - FileXact",
-    description: "FileXact 개인정보 처리 기준과 파일 처리 방식을 안내합니다.",
-  },
-  terms: {
-    title: "이용약관 - FileXact",
-    description: "FileXact 온라인 이미지·PDF 도구 이용약관을 확인하세요.",
-  },
-  contact: {
-    title: "문의하기 - FileXact",
-    description: "FileXact 기능 오류, 기능 제안, 개인정보 및 약관 문의를 남겨주세요.",
-  },
-};
-
-function updateMetaTag(name: string, content: string) {
-  let tag = document.querySelector(`meta[name="${name}"]`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("name", name);
-    document.head.appendChild(tag);
-  }
-  tag.setAttribute("content", content);
-}
-
 function App() {
   const [screen, setScreen] = useState<Screen>("home");
-
-  useEffect(() => {
-    const meta = screenMeta[screen];
-    document.title = meta.title;
-    updateMetaTag("description", meta.description);
-    updateMetaTag("application-name", "FileXact");
-    updateMetaTag("theme-color", "#2563eb");
-  }, [screen]);
-
   return (
     <div className="min-h-screen bg-white text-slate-950">
       <Header setScreen={setScreen} />
@@ -760,7 +689,7 @@ function Header({ setScreen }: { setScreen: (screen: Screen) => void }) {
         <button onClick={() => go("home")} className="flex cursor-pointer items-center gap-2 rounded-xl px-1 py-1 hover:bg-slate-50">
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white"><FileImage size={21} /></span>
           <span className="text-left leading-tight">
-            <span className="block text-2xl font-black tracking-tight">File<span className="text-violet-500">X</span><span className="text-blue-600">act</span></span>
+            <span className="block text-2xl font-black tracking-tight">File<span className="text-blue-600">Xact</span></span>
             <span className="block text-xs font-bold text-slate-500">파일잭트</span>
           </span>
         </button>
@@ -768,17 +697,15 @@ function Header({ setScreen }: { setScreen: (screen: Screen) => void }) {
           {navItems.map((item) => <button key={item.label} onClick={() => go(item.screen)} className="cursor-pointer hover:text-blue-600">{item.label}</button>)}
         </nav>
         <div className="flex items-center gap-2">
-          <button className="hidden cursor-pointer px-3 py-2 text-sm font-black hover:text-blue-600 sm:block">로그인</button>
-          <button className="hidden cursor-pointer rounded-2xl bg-blue-600 px-4 py-2 text-sm font-black text-white hover:bg-blue-700 sm:block">가입하기</button>
-          <button onClick={() => setOpen((prev) => !prev)} className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-2xl bg-slate-100 hover:bg-slate-200"><Menu /></button>
+          <button disabled className="hidden cursor-not-allowed px-3 py-2 text-sm font-black text-slate-300 sm:block">로그인</button>
+          <button disabled className="hidden cursor-not-allowed rounded-2xl bg-slate-200 px-4 py-2 text-sm font-black text-slate-400 sm:block">가입하기</button>
+          <button disabled title="MVP 테스트 중에는 비활성화되어 있습니다." className="flex h-11 w-11 cursor-not-allowed items-center justify-center rounded-2xl bg-slate-100 text-slate-300"><Menu /></button>
         </div>
       </div>
       {open && (
         <div className="border-t bg-white p-4 md:hidden">
-          <div className="grid gap-2">
-            {navItems.map((item) => <button key={item.label} onClick={() => go(item.screen)} className="flex cursor-pointer items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-left font-black">{item.label}<ArrowRight size={16} /></button>)}
-            <button className="rounded-2xl border px-4 py-3 font-black">로그인</button>
-            <button className="rounded-2xl bg-blue-600 px-4 py-3 font-black text-white">가입하기</button>
+          <div className="rounded-2xl bg-slate-50 p-4 text-center text-sm font-bold text-slate-500">
+            모바일 메뉴는 MVP 테스트 중 비활성화되어 있습니다.
           </div>
         </div>
       )}
@@ -983,9 +910,13 @@ function Footer({ setScreen }: { setScreen: (screen: Screen) => void }) {
     { label: "이미지 압축", screen: "compress" },
     { label: "이미지 크기 조절", screen: "resize" },
     { label: "이미지 PDF 변환", screen: "imagepdf" },
+    { label: "JPG로 변환", screen: "jpg" },
+    { label: "이미지 PDF 변환", screen: "imagepdf" },
+    { label: "간단 포토 에디터", screen: "editor" },
+    { label: "워터마크 넣기", screen: "watermark" },
     { label: "개인정보 가리기", screen: "blur" },
   ];
-  const guideLinks = ["이력서 사진 용량 줄이기", "청약 서류 PDF 만들기", "공공기관 첨부파일 정리", "이미지 워터마크 넣기"];
+  const guideLinks = ["이력서 사진 용량 줄이기", "청약 서류 PDF 만들기", "공공기관 첨부파일 정리", "JPG 변환 전 확인하기", "이미지 워터마크 넣기", "개인정보 가리기 주의사항"];
 
   return (
     <footer className="bg-[#24242c] px-4 py-14 text-slate-200 md:py-16">
@@ -1032,7 +963,7 @@ function Footer({ setScreen }: { setScreen: (screen: Screen) => void }) {
           </div>
 
           <div>
-            <h3 className="mb-4 font-black text-white">회사</h3>
+            <h3 className="mb-4 font-black text-white">운영 안내</h3>
             <div className="space-y-3 text-sm font-bold text-slate-400">
               <button onClick={() => setScreen("privacy")} className="block cursor-pointer hover:text-white">개인정보처리방침</button>
               <button onClick={() => setScreen("terms")} className="block cursor-pointer hover:text-white">이용약관</button>
@@ -1054,7 +985,7 @@ function Footer({ setScreen }: { setScreen: (screen: Screen) => void }) {
 }
 
 function BackButton({ goHome }: { goHome: () => void }) {
-  return <button onClick={goHome} className="mb-5 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm hover:bg-slate-100"><ArrowLeft size={16} /> 돌아가기</button>;
+  return <button onClick={goHome} className="mb-5 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm hover:bg-slate-100"><ArrowLeft size={16} /> 모든 도구로 돌아가기</button>;
 }
 
 function SidebarPreview({ title, items }: { title: string; items: UploadedImage[] }) {
@@ -1345,7 +1276,7 @@ function JpgScreen({ goHome }: { goHome: () => void }) {
     setImages((prev) => [...prev, ...nextImages]);
   };
   const run = async () => { setBusy(true); setResults(await Promise.all(images.map(convertToJpgOneImage))); setBusy(false); };
-  if (images.length === 0) return <ToolLayout goHome={goHome} side={<div><h2 className="text-center text-2xl font-black">JPG 설정</h2></div>}><UploadBox multiple title="JPG로 변환" desc="PNG, WebP 이미지를 JPG로 변환합니다." icon={<FileText size={46} />} onFiles={handleFiles} /></ToolLayout>;
+  if (images.length === 0) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">JPG 설정</h2><div className="rounded-2xl bg-blue-50 p-4 text-center text-sm font-bold text-blue-700">PNG, WebP 이미지를 JPG로 변환합니다.</div><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 변환 가능</button></div>}><UploadBox multiple title="JPG로 변환" desc="PNG, WebP 이미지를 JPG로 변환합니다." icon={<FileText size={46} />} onFiles={handleFiles} /></ToolLayout>;
   return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">JPG 설정</h2><SidebarPreview title="변환 미리보기" items={images} /><button onClick={run} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "변환 중..." : "JPG로 변환"}</button></div>}><ToolHeader title="JPG로 변환" sub={`${images.length}개 이미지 선택`} onAdd={() => document.getElementById("jpg-add")?.click()} /><input id="jpg-add" type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} /><ImageGrid images={images} remove={(id) => setImages((prev) => prev.filter((item) => item.id !== id))} /><ResultList results={results} zipName={`filexact_jpg_${getTodayString()}.zip`} /></ToolLayout>;
 }
 
@@ -1357,7 +1288,7 @@ function ImagePdfScreen({ goHome }: { goHome: () => void }) {
   };
   const move = (from: number, to: number) => setItems((prev) => { const next = [...prev]; const [item] = next.splice(from, 1); next.splice(to, 0, item); return next; });
   const createPdf = async () => { setBusy(true); const pdf = await createPdfFromImages(items, pageSize, orientation, fitMode); const blob = pdf.output("blob"); if (pdfUrl) URL.revokeObjectURL(pdfUrl); setPdfUrl(URL.createObjectURL(blob)); setBusy(false); };
-  if (items.length === 0) return <ToolLayout goHome={goHome} side={<div><h2 className="text-center text-2xl font-black">PDF 설정</h2></div>}><UploadBox multiple title="이미지 PDF 변환" desc="여러 장의 이미지를 선택한 순서대로 하나의 PDF로 묶습니다." icon={<Layers size={46} />} onFiles={handleFiles} /></ToolLayout>;
+  if (items.length === 0) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">PDF 설정</h2><div className="rounded-2xl bg-blue-50 p-4 text-center text-sm font-bold text-blue-700">이미지 1장당 PDF 1페이지로 변환합니다.</div><div className="grid grid-cols-2 gap-2"><button onClick={() => setPageSize("a4")} className={`rounded-2xl border px-3 py-3 font-black ${pageSize === "a4" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>A4</button><button onClick={() => setPageSize("image")} className={`rounded-2xl border px-3 py-3 font-black ${pageSize === "image" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>이미지 크기</button><button onClick={() => setOrientation("portrait")} className={`rounded-2xl border px-3 py-3 font-black ${orientation === "portrait" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>세로</button><button onClick={() => setOrientation("landscape")} className={`rounded-2xl border px-3 py-3 font-black ${orientation === "landscape" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>가로</button><button onClick={() => setFitMode("contain")} className={`rounded-2xl border px-3 py-3 font-black ${fitMode === "contain" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>전체 보이기</button><button onClick={() => setFitMode("cover")} className={`rounded-2xl border px-3 py-3 font-black ${fitMode === "cover" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>꽉 채우기</button></div><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 PDF 만들기</button></div>}><UploadBox multiple title="이미지 PDF 변환" desc="여러 장의 이미지를 선택한 순서대로 하나의 PDF로 묶습니다." icon={<Layers size={46} />} onFiles={handleFiles} /></ToolLayout>;
   return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">PDF 설정</h2><PdfPreview items={items} pageSize={pageSize} orientation={orientation} fitMode={fitMode} /><div className="grid grid-cols-2 gap-2"><button onClick={() => setPageSize("a4")} className={`rounded-2xl border px-3 py-3 font-black ${pageSize === "a4" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>A4</button><button onClick={() => setPageSize("image")} className={`rounded-2xl border px-3 py-3 font-black ${pageSize === "image" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>이미지 크기</button><button onClick={() => setOrientation("portrait")} className={`rounded-2xl border px-3 py-3 font-black ${orientation === "portrait" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>세로</button><button onClick={() => setOrientation("landscape")} className={`rounded-2xl border px-3 py-3 font-black ${orientation === "landscape" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>가로</button><button onClick={() => setFitMode("contain")} className={`rounded-2xl border px-3 py-3 font-black ${fitMode === "contain" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>전체 보이기</button><button onClick={() => setFitMode("cover")} className={`rounded-2xl border px-3 py-3 font-black ${fitMode === "cover" ? "bg-blue-50 border-blue-500" : "bg-white"}`}>꽉 채우기</button></div><button onClick={createPdf} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "만드는 중..." : "PDF 만들기"}</button>{pdfUrl && <a href={pdfUrl} download={`filexact_image_pdf_${getTodayString()}.pdf`} className="block rounded-2xl bg-slate-950 px-6 py-4 text-center font-black text-white">PDF 다운로드</a>}</div>}><ToolHeader title="이미지 PDF 변환" sub={`${items.length}개 이미지 선택`} onAdd={() => document.getElementById("pdf-add")?.click()} /><input id="pdf-add" type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-4 md:grid-cols-3">{items.map((item, index) => <article key={item.id} draggable onDragStart={() => setDragIndex(index)} onDragOver={(e) => e.preventDefault()} onDrop={() => { if (dragIndex !== null) move(dragIndex, index); setDragIndex(null); }} className="relative cursor-grab rounded-3xl bg-white p-3 shadow-sm"><span className="absolute left-3 top-3 rounded-full bg-blue-600 px-2 py-1 text-xs font-black text-white">{index + 1}</span><button onClick={() => setItems((prev) => prev.filter((v) => v.id !== item.id))} className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow">×</button><img src={item.previewUrl} className="h-44 w-full rounded-2xl bg-slate-50 object-contain" /><p className="mt-3 truncate text-sm font-black">{item.file.name}</p><p className="mt-2 rounded-xl bg-blue-50 px-3 py-2 text-center text-xs font-bold text-blue-600">드래그해서 순서 변경</p></article>)}</div>{pdfUrl && <div className="mt-6 rounded-3xl bg-white p-5"><h3 className="mb-4 text-xl font-black">PDF 미리보기</h3><iframe src={pdfUrl} title="PDF 미리보기" className="h-[560px] w-full rounded-2xl border" /></div>}</ToolLayout>;
 }
 
@@ -1397,24 +1328,488 @@ async function createPdfFromImages(items: UploadedImage[], pageSize: "a4" | "ima
 }
 
 function PhotoEditorScreen({ goHome }: { goHome: () => void }) {
-  const [item, setItem] = useState<UploadedImage | null>(null); const [edited, setEdited] = useState<ResultImage | null>(null); const [rotation, setRotation] = useState(0); const [brightness, setBrightness] = useState(100); const [contrast, setContrast] = useState(100); const [saturation, setSaturation] = useState(100); const [filterPreset, setFilterPreset] = useState<FilterPreset>("none"); const [flipX, setFlipX] = useState(false); const [flipY, setFlipY] = useState(false); const [textBoxes, setTextBoxes] = useState<TextBox[]>([]); const [activeTextBoxId, setActiveTextBoxId] = useState(""); const [borderWidth, setBorderWidth] = useState(0); const [borderColor, setBorderColor] = useState("#2563eb"); const [saveFormat, setSaveFormat] = useState<"jpeg" | "png">("jpeg"); const [busy, setBusy] = useState(false); const fileInputRef = useRef<HTMLInputElement | null>(null); const previewRef = useRef<HTMLDivElement | null>(null); const dragRef = useRef<{ id: string; mode: "move" | "resize"; startX: number; startY: number; box: TextBox } | null>(null);
+  const [item, setItem] = useState<UploadedImage | null>(null);
+  const [edited, setEdited] = useState<ResultImage | null>(null);
+  const [rotation, setRotation] = useState(0);
+  const [brightness, setBrightness] = useState(100);
+  const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
+  const [filterPreset, setFilterPreset] = useState<FilterPreset>("none");
+  const [flipX, setFlipX] = useState(false);
+  const [flipY, setFlipY] = useState(false);
+  const [textBoxes, setTextBoxes] = useState<TextBox[]>([]);
+  const [activeTextBoxId, setActiveTextBoxId] = useState("");
+  const [borderWidth, setBorderWidth] = useState(0);
+  const [borderColor, setBorderColor] = useState("#2563eb");
+  const [saveFormat, setSaveFormat] = useState<"jpeg" | "png">("jpeg");
+  const [busy, setBusy] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const previewRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef<{
+    id: string;
+    mode: "move" | "resize";
+    startX: number;
+    startY: number;
+    box: TextBox;
+  } | null>(null);
+
   const active = textBoxes.find((b) => b.id === activeTextBoxId) || textBoxes[0];
-  const preset = filterPreset === "gray" ? "grayscale(100%)" : filterPreset === "sepia" ? "sepia(80%)" : filterPreset === "warm" ? "sepia(25%) saturate(120%) brightness(105%)" : filterPreset === "cool" ? "hue-rotate(190deg) saturate(115%)" : "";
-  const imgStyle = { transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`, filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) ${preset}` };
-  const addText = () => { const b = { id: makeId(), text: "텍스트", x: 35, y: 42, width: 30, height: 12 }; setTextBoxes((p) => [...p, b]); setActiveTextBoxId(b.id); };
-  const updateBox = (id: string, patch: Partial<TextBox>) => setTextBoxes((p) => p.map((b) => b.id === id ? { ...b, ...patch, x: Math.min(95, Math.max(0, patch.x ?? b.x)), y: Math.min(95, Math.max(0, patch.y ?? b.y)), width: Math.min(100, Math.max(8, patch.width ?? b.width)), height: Math.min(100, Math.max(6, patch.height ?? b.height)) } : b));
-  const startDrag = (e: React.MouseEvent<HTMLDivElement>, box: TextBox, mode: "move" | "resize") => { e.preventDefault(); e.stopPropagation(); setActiveTextBoxId(box.id); dragRef.current = { id: box.id, mode, startX: e.clientX, startY: e.clientY, box }; const move = (ev: MouseEvent) => { const state = dragRef.current; const rect = previewRef.current?.getBoundingClientRect(); if (!state || !rect) return; const dx = ((ev.clientX - state.startX) / rect.width) * 100; const dy = ((ev.clientY - state.startY) / rect.height) * 100; if (state.mode === "move") updateBox(state.id, { x: Math.min(100 - state.box.width, Math.max(0, state.box.x + dx)), y: Math.min(100 - state.box.height, Math.max(0, state.box.y + dy)) }); else updateBox(state.id, { width: Math.min(100 - state.box.x, Math.max(8, state.box.width + dx)), height: Math.min(100 - state.box.y, Math.max(6, state.box.height + dy)) }); }; const up = () => { dragRef.current = null; window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); }; window.addEventListener("mousemove", move); window.addEventListener("mouseup", up); };
-  const handleFiles = async (files?: FileList | null) => { const [next] = await readFiles(files); if (next) setItem(next); setEdited(null); };
-  const apply = async () => { if (!item) return; setBusy(true); setEdited(await editOneImage(item, { rotation, brightness, contrast, saturation, filterPreset, flipX, flipY, textBoxes, borderWidth, borderColor, saveFormat })); setBusy(false); };
-  if (!item) return <ToolLayout goHome={goHome} side={<EditorSide />}><UploadBox title="간단 포토 에디터" desc="필터, 회전, 반전, 텍스트, 프레임까지 브라우저에서 바로 편집합니다." icon={<Wand2 size={46} />} onFiles={handleFiles} /></ToolLayout>;
-  return <ToolLayout goHome={goHome} side={<div className="space-y-5"><EditorControls filterPreset={filterPreset} setFilterPreset={setFilterPreset} rotation={rotation} setRotation={setRotation} flipX={flipX} setFlipX={setFlipX} flipY={flipY} setFlipY={setFlipY} brightness={brightness} setBrightness={setBrightness} contrast={contrast} setContrast={setContrast} saturation={saturation} setSaturation={setSaturation} addText={addText} active={active} updateBox={updateBox} borderWidth={borderWidth} setBorderWidth={setBorderWidth} borderColor={borderColor} setBorderColor={setBorderColor} saveFormat={saveFormat} setSaveFormat={setSaveFormat} /><button onClick={apply} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "적용 중..." : "편집 적용"}</button></div>}><ToolHeader title="간단 포토 에디터" sub={`${item.file.name} · ${item.width}×${item.height}`} onAdd={() => fileInputRef.current?.click()} /><input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-5 xl:grid-cols-2"><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">원본 이미지</p><img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" /></div><div className="rounded-3xl bg-white p-4"><div className="mb-3 flex justify-between"><p className="font-black">편집 미리보기</p><button onClick={addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">+ 텍스트 추가</button></div><div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50"><img src={item.previewUrl} className="max-h-full max-w-full object-contain" style={imgStyle} />{borderWidth > 0 && <div className="pointer-events-none absolute inset-6 rounded-2xl" style={{ border: `${borderWidth}px solid ${borderColor}` }} />}{textBoxes.map((box, index) => <div key={box.id} onMouseDown={(e) => startDrag(e, box, "move")} className={`absolute cursor-move rounded-xl border-2 border-dashed bg-black/25 px-2 py-1 text-center font-black text-white ${active?.id === box.id ? "border-blue-600" : "border-white/70"}`} style={{ left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%`, fontSize: `${Math.max(12, box.height * 1.5)}px` }}><span className="pointer-events-none flex h-full items-center justify-center">{box.text || `텍스트 ${index + 1}`}</span><button onClick={(e) => { e.stopPropagation(); setTextBoxes((p) => p.filter((v) => v.id !== box.id)); }} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow">×</button><div onMouseDown={(e) => startDrag(e, box, "resize")} className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600" /></div>)}</div><p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">텍스트 박스를 드래그해 옮기고, 오른쪽 아래 손잡이로 크기를 조절하세요.</p>{edited && <a href={edited.url} download={edited.downloadName} className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white">편집 이미지 다운로드</a>}</div></div></ToolLayout>;
+
+  const preset =
+    filterPreset === "gray"
+      ? "grayscale(100%)"
+      : filterPreset === "sepia"
+        ? "sepia(80%)"
+        : filterPreset === "warm"
+          ? "sepia(25%) saturate(120%) brightness(105%)"
+          : filterPreset === "cool"
+            ? "hue-rotate(190deg) saturate(115%)"
+            : "";
+
+  const imgStyle = {
+    transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`,
+    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) ${preset}`,
+  };
+
+  const addText = () => {
+    const b = { id: makeId(), text: "텍스트", x: 35, y: 42, width: 30, height: 12 };
+    setTextBoxes((p) => [...p, b]);
+    setActiveTextBoxId(b.id);
+  };
+
+  const updateBox = (id: string, patch: Partial<TextBox>) =>
+    setTextBoxes((p) =>
+      p.map((b) =>
+        b.id === id
+          ? {
+              ...b,
+              ...patch,
+              x: Math.min(95, Math.max(0, patch.x ?? b.x)),
+              y: Math.min(95, Math.max(0, patch.y ?? b.y)),
+              width: Math.min(100, Math.max(8, patch.width ?? b.width)),
+              height: Math.min(100, Math.max(6, patch.height ?? b.height)),
+            }
+          : b
+      )
+    );
+
+  const startDrag = (e: React.MouseEvent<HTMLDivElement>, box: TextBox, mode: "move" | "resize") => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setActiveTextBoxId(box.id);
+    dragRef.current = { id: box.id, mode, startX: e.clientX, startY: e.clientY, box };
+
+    const move = (ev: MouseEvent) => {
+      const state = dragRef.current;
+      const rect = previewRef.current?.getBoundingClientRect();
+      if (!state || !rect) return;
+
+      const dx = ((ev.clientX - state.startX) / rect.width) * 100;
+      const dy = ((ev.clientY - state.startY) / rect.height) * 100;
+
+      if (state.mode === "move") {
+        updateBox(state.id, {
+          x: Math.min(100 - state.box.width, Math.max(0, state.box.x + dx)),
+          y: Math.min(100 - state.box.height, Math.max(0, state.box.y + dy)),
+        });
+      } else {
+        updateBox(state.id, {
+          width: Math.min(100 - state.box.x, Math.max(8, state.box.width + dx)),
+          height: Math.min(100 - state.box.y, Math.max(6, state.box.height + dy)),
+        });
+      }
+    };
+
+    const up = () => {
+      dragRef.current = null;
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    };
+
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  };
+
+  const handleFiles = async (files?: FileList | null) => {
+    const [next] = await readFiles(files);
+    if (next) setItem(next);
+    setEdited(null);
+  };
+
+  const apply = async () => {
+    if (!item) return;
+    setBusy(true);
+    setEdited(
+      await editOneImage(item, {
+        rotation,
+        brightness,
+        contrast,
+        saturation,
+        filterPreset,
+        flipX,
+        flipY,
+        textBoxes,
+        borderWidth,
+        borderColor,
+        saveFormat,
+      })
+    );
+    setBusy(false);
+  };
+
+  const side = (
+    <div className="space-y-5">
+      <EditorControls
+        filterPreset={filterPreset}
+        setFilterPreset={setFilterPreset}
+        rotation={rotation}
+        setRotation={setRotation}
+        flipX={flipX}
+        setFlipX={setFlipX}
+        flipY={flipY}
+        setFlipY={setFlipY}
+        brightness={brightness}
+        setBrightness={setBrightness}
+        contrast={contrast}
+        setContrast={setContrast}
+        saturation={saturation}
+        setSaturation={setSaturation}
+        addText={addText}
+        active={active}
+        updateBox={updateBox}
+        borderWidth={borderWidth}
+        setBorderWidth={setBorderWidth}
+        borderColor={borderColor}
+        setBorderColor={setBorderColor}
+        saveFormat={saveFormat}
+        setSaveFormat={setSaveFormat}
+      />
+
+      <button
+        onClick={apply}
+        disabled={busy || !item}
+        className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {!item ? "이미지 선택 후 편집 가능" : busy ? "적용 중..." : "편집 적용"}
+      </button>
+    </div>
+  );
+
+  if (!item) {
+    return (
+      <ToolLayout goHome={goHome} side={side}>
+        <UploadBox
+          title="간단 포토 에디터"
+          desc="필터, 회전, 반전, 텍스트, 프레임까지 브라우저에서 바로 편집합니다."
+          icon={<Wand2 size={46} />}
+          onFiles={handleFiles}
+        />
+      </ToolLayout>
+    );
+  }
+
+  return (
+    <ToolLayout goHome={goHome} side={side}>
+      <ToolHeader
+        title="간단 포토 에디터"
+        sub={`${item.file.name} · ${item.width}×${item.height}`}
+        onAdd={() => fileInputRef.current?.click()}
+      />
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+
+      <div className="grid gap-5 xl:grid-cols-2">
+        <div className="rounded-3xl bg-white p-4">
+          <p className="mb-3 font-black">원본 이미지</p>
+          <img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" />
+        </div>
+
+        <div className="rounded-3xl bg-white p-4">
+          <div className="mb-3 flex justify-between">
+            <p className="font-black">편집 미리보기</p>
+            <button onClick={addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">
+              + 텍스트 추가
+            </button>
+          </div>
+
+          <div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50">
+            <img src={item.previewUrl} className="max-h-full max-w-full object-contain" style={imgStyle} />
+
+            {borderWidth > 0 && (
+              <div
+                className="pointer-events-none absolute inset-6 rounded-2xl"
+                style={{ border: `${borderWidth}px solid ${borderColor}` }}
+              />
+            )}
+
+            {textBoxes.map((box, index) => (
+              <div
+                key={box.id}
+                onMouseDown={(e) => startDrag(e, box, "move")}
+                className={`absolute cursor-move rounded-xl border-2 border-dashed bg-black/25 px-2 py-1 text-center font-black text-white ${
+                  active?.id === box.id ? "border-blue-600" : "border-white/70"
+                }`}
+                style={{
+                  left: `${box.x}%`,
+                  top: `${box.y}%`,
+                  width: `${box.width}%`,
+                  height: `${box.height}%`,
+                  fontSize: `${Math.max(12, box.height * 1.5)}px`,
+                }}
+              >
+                <span className="pointer-events-none flex h-full items-center justify-center">
+                  {box.text || `텍스트 ${index + 1}`}
+                </span>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTextBoxes((p) => p.filter((v) => v.id !== box.id));
+                  }}
+                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow"
+                >
+                  ×
+                </button>
+
+                <div
+                  onMouseDown={(e) => startDrag(e, box, "resize")}
+                  className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600"
+                />
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
+            텍스트 박스를 드래그해 옮기고, 오른쪽 아래 손잡이로 크기를 조절하세요.
+          </p>
+
+          {edited && (
+            <a
+              href={edited.url}
+              download={edited.downloadName}
+              className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white"
+            >
+              편집 이미지 다운로드
+            </a>
+          )}
+        </div>
+      </div>
+    </ToolLayout>
+  );
 }
 
-function EditorSide() { return <div><h2 className="text-center text-2xl font-black">편집 설정</h2></div>; }
+function EditorControls(props: {
+  filterPreset: FilterPreset;
+  setFilterPreset: (value: FilterPreset) => void;
+  rotation: number;
+  setRotation: (value: number) => void;
+  flipX: boolean;
+  setFlipX: React.Dispatch<React.SetStateAction<boolean>>;
+  flipY: boolean;
+  setFlipY: React.Dispatch<React.SetStateAction<boolean>>;
+  brightness: number;
+  setBrightness: (value: number) => void;
+  contrast: number;
+  setContrast: (value: number) => void;
+  saturation: number;
+  setSaturation: (value: number) => void;
+  addText: () => void;
+  active?: TextBox;
+  updateBox: (id: string, patch: Partial<TextBox>) => void;
+  borderWidth: number;
+  setBorderWidth: (value: number) => void;
+  borderColor: string;
+  setBorderColor: (value: string) => void;
+  saveFormat: "jpeg" | "png";
+  setSaveFormat: (value: "jpeg" | "png") => void;
+}) {
+  const filters: [FilterPreset, string][] = [
+    ["none", "원본"],
+    ["gray", "흑백"],
+    ["sepia", "세피아"],
+    ["warm", "따뜻하게"],
+    ["cool", "차갑게"],
+  ];
 
-function EditorControls(props: any) {
-  const filters: [FilterPreset, string][] = [["none", "원본"], ["gray", "흑백"], ["sepia", "세피아"], ["warm", "따뜻하게"], ["cool", "차갑게"]];
-  return <><h2 className="text-center text-2xl font-black">편집 설정</h2><div><p className="mb-2 font-black">필터</p><div className="grid grid-cols-2 gap-2">{filters.map(([value, label]) => <button key={value} onClick={() => props.setFilterPreset(value)} className={`rounded-2xl border px-3 py-2 font-black ${props.filterPreset === value ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{label}</button>)}</div></div><div><p className="mb-2 font-black">회전</p><div className="grid grid-cols-4 gap-2">{[0, 90, 180, 270].map((v) => <button key={v} onClick={() => props.setRotation(v)} className={`rounded-xl border px-2 py-2 font-black ${props.rotation === v ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{v}°</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><button onClick={() => props.setFlipX((p: boolean) => !p)} className={`rounded-2xl border px-3 py-2 font-black ${props.flipX ? "border-blue-500 bg-blue-50" : "bg-white"}`}>좌우 반전</button><button onClick={() => props.setFlipY((p: boolean) => !p)} className={`rounded-2xl border px-3 py-2 font-black ${props.flipY ? "border-blue-500 bg-blue-50" : "bg-white"}`}>상하 반전</button></div></div>{[["밝기", props.brightness, props.setBrightness, 50, 150], ["대비", props.contrast, props.setContrast, 50, 150], ["채도", props.saturation, props.setSaturation, 0, 200]].map(([label, value, setter, min, max]) => <div key={label as string}><div className="mb-2 flex justify-between font-black"><span>{label as string}</span><span>{value as number}%</span></div><input type="range" min={min as number} max={max as number} value={value as number} onChange={(e) => setter(Number(e.target.value))} className="w-full" /></div>)}<div className="rounded-2xl border p-3"><div className="mb-3 flex justify-between"><p className="font-black">텍스트 박스</p><button onClick={props.addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">추가</button></div>{props.active ? <div className="space-y-3"><input value={props.active.text} onChange={(e) => props.updateBox(props.active.id, { text: e.target.value })} className="w-full rounded-xl border px-3 py-2" /><div className="grid grid-cols-2 gap-2"><label className="text-xs font-bold">가로 %<input type="number" value={Math.round(props.active.width)} onChange={(e) => props.updateBox(props.active.id, { width: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label><label className="text-xs font-bold">세로 %<input type="number" value={Math.round(props.active.height)} onChange={(e) => props.updateBox(props.active.id, { height: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label></div></div> : <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">텍스트 추가를 누르세요.</p>}</div><div className="rounded-2xl border p-3"><p className="mb-3 font-black">프레임 / 저장</p><div className="mb-2 flex justify-between font-black"><span>테두리 두께</span><span>{props.borderWidth}px</span></div><input type="range" min={0} max={40} value={props.borderWidth} onChange={(e) => props.setBorderWidth(Number(e.target.value))} className="w-full" /><div className="mt-3 flex items-center justify-between"><span className="font-bold">테두리 색상</span><input type="color" value={props.borderColor} onChange={(e) => props.setBorderColor(e.target.value)} /></div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={() => props.setSaveFormat("jpeg")} className={`rounded-2xl border px-3 py-2 font-black ${props.saveFormat === "jpeg" ? "border-blue-500 bg-blue-50" : "bg-white"}`}>JPG 저장</button><button onClick={() => props.setSaveFormat("png")} className={`rounded-2xl border px-3 py-2 font-black ${props.saveFormat === "png" ? "border-blue-500 bg-blue-50" : "bg-white"}`}>PNG 저장</button></div></div></>;
+  return (
+    <>
+      <h2 className="text-center text-2xl font-black">편집 설정</h2>
+
+      <div>
+        <p className="mb-2 font-black">필터</p>
+        <div className="grid grid-cols-2 gap-2">
+          {filters.map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => props.setFilterPreset(value)}
+              className={`rounded-2xl border px-3 py-2 font-black ${
+                props.filterPreset === value ? "border-blue-500 bg-blue-50" : "bg-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-2 font-black">회전</p>
+        <div className="grid grid-cols-4 gap-2">
+          {[0, 90, 180, 270].map((value) => (
+            <button
+              key={value}
+              onClick={() => props.setRotation(value)}
+              className={`rounded-xl border px-2 py-2 font-black ${
+                props.rotation === value ? "border-blue-500 bg-blue-50" : "bg-white"
+              }`}
+            >
+              {value}°
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => props.setFlipX((prev) => !prev)}
+            className={`rounded-2xl border px-3 py-2 font-black ${
+              props.flipX ? "border-blue-500 bg-blue-50" : "bg-white"
+            }`}
+          >
+            좌우 반전
+          </button>
+          <button
+            onClick={() => props.setFlipY((prev) => !prev)}
+            className={`rounded-2xl border px-3 py-2 font-black ${
+              props.flipY ? "border-blue-500 bg-blue-50" : "bg-white"
+            }`}
+          >
+            상하 반전
+          </button>
+        </div>
+      </div>
+
+      {[
+        ["밝기", props.brightness, props.setBrightness, 50, 150],
+        ["대비", props.contrast, props.setContrast, 50, 150],
+        ["채도", props.saturation, props.setSaturation, 0, 200],
+      ].map(([label, value, setter, min, max]) => (
+        <div key={label as string}>
+          <div className="mb-2 flex justify-between font-black">
+            <span>{label as string}</span>
+            <span>{value as number}%</span>
+          </div>
+          <input
+            type="range"
+            min={min as number}
+            max={max as number}
+            value={value as number}
+            onChange={(e) => (setter as (value: number) => void)(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+      ))}
+
+      <div className="rounded-2xl border p-3">
+        <div className="mb-3 flex justify-between">
+          <p className="font-black">텍스트 박스</p>
+          <button
+            onClick={props.addText}
+            className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white"
+          >
+            추가
+          </button>
+        </div>
+
+        {props.active ? (
+          <div className="space-y-3">
+            <input
+              value={props.active.text}
+              onChange={(e) => props.updateBox(props.active!.id, { text: e.target.value })}
+              className="w-full rounded-xl border px-3 py-2"
+            />
+
+            <div className="grid grid-cols-2 gap-2">
+              <label className="text-xs font-bold">
+                가로 %
+                <input
+                  type="number"
+                  value={Math.round(props.active.width)}
+                  onChange={(e) => props.updateBox(props.active!.id, { width: Number(e.target.value) })}
+                  className="mt-1 w-full rounded-xl border px-3 py-2"
+                />
+              </label>
+              <label className="text-xs font-bold">
+                세로 %
+                <input
+                  type="number"
+                  value={Math.round(props.active.height)}
+                  onChange={(e) => props.updateBox(props.active!.id, { height: Number(e.target.value) })}
+                  className="mt-1 w-full rounded-xl border px-3 py-2"
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">
+            텍스트 추가를 누르세요.
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-2xl border p-3">
+        <p className="mb-3 font-black">프레임 / 저장</p>
+
+        <div className="mb-2 flex justify-between font-black">
+          <span>테두리 두께</span>
+          <span>{props.borderWidth}px</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={40}
+          value={props.borderWidth}
+          onChange={(e) => props.setBorderWidth(Number(e.target.value))}
+          className="w-full"
+        />
+
+        <div className="mt-3 flex items-center justify-between">
+          <span className="font-bold">테두리 색상</span>
+          <input
+            type="color"
+            value={props.borderColor}
+            onChange={(e) => props.setBorderColor(e.target.value)}
+          />
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => props.setSaveFormat("jpeg")}
+            className={`rounded-2xl border px-3 py-2 font-black ${
+              props.saveFormat === "jpeg" ? "border-blue-500 bg-blue-50" : "bg-white"
+            }`}
+          >
+            JPG 저장
+          </button>
+          <button
+            onClick={() => props.setSaveFormat("png")}
+            className={`rounded-2xl border px-3 py-2 font-black ${
+              props.saveFormat === "png" ? "border-blue-500 bg-blue-50" : "bg-white"
+            }`}
+          >
+            PNG 저장
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }
 
 function WatermarkScreen({ goHome }: { goHome: () => void }) {
@@ -1422,7 +1817,7 @@ function WatermarkScreen({ goHome }: { goHome: () => void }) {
   const handleFiles = async (files?: FileList | null) => { const [next] = await readFiles(files); if (next) setItem(next); setWatermarked(null); };
   const preview = () => { const txt = text || "워터마크"; const fs = Math.max(16, Math.round(fontSize / 2)); if (watermarkStyle === "diagonalBand") return <div className="pointer-events-none absolute left-1/2 top-1/2 flex w-[155%] -translate-x-1/2 -translate-y-1/2 -rotate-[28deg] justify-center bg-black/30 py-4" style={{ opacity: opacity / 100 }}><span className="font-black text-white" style={{ fontSize: fs }}>{txt}</span></div>; if (watermarkStyle === "horizontalBand") return <div className="pointer-events-none absolute left-1/2 top-1/2 flex w-[155%] -translate-x-1/2 -translate-y-1/2 justify-center bg-black/30 py-4" style={{ opacity: opacity / 100 }}><span className="font-black text-white" style={{ fontSize: fs }}>{txt}</span></div>; if (watermarkStyle === "repeat") return <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ opacity: opacity / 100 }}>{Array.from({ length: 24 }).map((_, i) => <span key={i} className="absolute -rotate-[24deg] font-black text-white drop-shadow" style={{ left: `${(i % 4) * 32 - 18}%`, top: `${Math.floor(i / 4) * 20 - 14}%`, fontSize: Math.max(12, Math.round(fontSize / 2.7)) }}>{txt}</span>)}</div>; const cls = position === "center" ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" : position === "bottomRight" ? "bottom-6 right-6" : position === "bottomLeft" ? "bottom-6 left-6" : position === "topRight" ? "right-6 top-6" : "left-6 top-6"; return <span className={`pointer-events-none absolute rounded-xl bg-black/20 px-3 py-1 font-black text-white shadow ${cls}`} style={{ opacity: opacity / 100, fontSize: fs }}>{txt}</span>; };
   const apply = async () => { if (!item) return; setBusy(true); setWatermarked(await watermarkOneImage(item, text, position, opacity, fontSize, watermarkStyle)); setBusy(false); };
-  if (!item) return <ToolLayout goHome={goHome} side={<div><h2 className="text-center text-2xl font-black">워터마크 설정</h2></div>}><UploadBox title="워터마크 넣기" desc="이미지 전체에 대각선 띠, 가로띠, 반복 패턴, 위치형 텍스트 워터마크를 적용합니다." icon={<ShieldCheck size={46} />} onFiles={handleFiles} /></ToolLayout>;
+  if (!item) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">워터마크 설정</h2><div><label className="mb-2 block font-black">워터마크 문구</label><input value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded-2xl border px-4 py-3" /></div><div><p className="mb-2 font-black">스타일</p><div className="grid grid-cols-2 gap-2">{[["stamp", "기본 텍스트"], ["diagonalBand", "전체 대각선 띠"], ["repeat", "전체 반복"], ["horizontalBand", "전체 가로띠"]].map(([value, label]) => <button key={value} onClick={() => setWatermarkStyle(value as WatermarkStyle)} className={`rounded-2xl border px-3 py-2 font-black ${watermarkStyle === value ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{label}</button>)}</div></div><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 적용 가능</button></div>}><UploadBox title="워터마크 넣기" desc="이미지 전체에 대각선 띠, 가로띠, 반복 패턴, 위치형 텍스트 워터마크를 적용합니다." icon={<ShieldCheck size={46} />} onFiles={handleFiles} /></ToolLayout>;
   return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">워터마크 설정</h2><SidebarPreview title="워터마크 미리보기" items={[item]} /><div><label className="mb-2 block font-black">워터마크 문구</label><input value={text} onChange={(e) => setText(e.target.value)} className="w-full rounded-2xl border px-4 py-3" /></div><div><p className="mb-2 font-black">스타일</p><div className="grid grid-cols-2 gap-2">{[["stamp", "기본 텍스트"], ["diagonalBand", "전체 대각선 띠"], ["repeat", "전체 반복"], ["horizontalBand", "전체 가로띠"]].map(([value, label]) => <button key={value} onClick={() => setWatermarkStyle(value as WatermarkStyle)} className={`rounded-2xl border px-3 py-2 font-black ${watermarkStyle === value ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{label}</button>)}</div></div>{watermarkStyle === "stamp" && <div><p className="mb-2 font-black">위치</p><div className="grid grid-cols-2 gap-2">{[["center", "가운데"], ["bottomRight", "오른쪽 아래"], ["bottomLeft", "왼쪽 아래"], ["topRight", "오른쪽 위"], ["topLeft", "왼쪽 위"]].map(([value, label]) => <button key={value} onClick={() => setPosition(value as any)} className={`rounded-2xl border px-3 py-2 font-black ${position === value ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{label}</button>)}</div></div>}{[["투명도", opacity, setOpacity, 10, 100], ["글자 크기", fontSize, setFontSize, 18, 120]].map(([label, value, setter, min, max]) => <div key={label as string}><div className="mb-2 flex justify-between font-black"><span>{label as string}</span><span>{value as number}{label === "투명도" ? "%" : "px"}</span></div><input type="range" min={min as number} max={max as number} value={value as number} onChange={(e) => (setter as any)(Number(e.target.value))} className="w-full" /></div>)}<button onClick={apply} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "적용 중..." : "워터마크 적용"}</button></div>}><ToolHeader title="워터마크 넣기" sub={`${item.file.name} · ${item.width}×${item.height}`} onAdd={() => fileRef.current?.click()} /><input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-5 xl:grid-cols-2"><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">원본 이미지</p><img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" /></div><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">워터마크 미리보기</p><div className="relative flex h-[520px] items-center justify-center overflow-hidden rounded-2xl bg-slate-50"><img src={item.previewUrl} className="max-h-full max-w-full object-contain" />{preview()}</div>{watermarked && <a href={watermarked.url} download={watermarked.downloadName} className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white">워터마크 이미지 다운로드</a>}</div></div></ToolLayout>;
 }
 
@@ -1433,7 +1828,7 @@ function PrivacyBlurScreen({ goHome }: { goHome: () => void }) {
   const update = (id: string, patch: Partial<BlurBox>) => setBoxes((p) => p.map((b) => b.id === id ? { ...b, ...patch, x: Math.min(95, Math.max(0, patch.x ?? b.x)), y: Math.min(95, Math.max(0, patch.y ?? b.y)), width: Math.min(100, Math.max(5, patch.width ?? b.width)), height: Math.min(100, Math.max(5, patch.height ?? b.height)) } : b));
   const startDrag = (e: React.MouseEvent<HTMLDivElement>, box: BlurBox, mode: "move" | "resize") => { e.preventDefault(); e.stopPropagation(); setActiveId(box.id); dragRef.current = { id: box.id, mode, startX: e.clientX, startY: e.clientY, box }; const move = (ev: MouseEvent) => { const s = dragRef.current; const rect = previewRef.current?.getBoundingClientRect(); if (!s || !rect) return; const dx = ((ev.clientX - s.startX) / rect.width) * 100; const dy = ((ev.clientY - s.startY) / rect.height) * 100; if (s.mode === "move") update(s.id, { x: Math.min(100 - s.box.width, Math.max(0, s.box.x + dx)), y: Math.min(100 - s.box.height, Math.max(0, s.box.y + dy)) }); else update(s.id, { width: Math.min(100 - s.box.x, Math.max(5, s.box.width + dx)), height: Math.min(100 - s.box.y, Math.max(5, s.box.height + dy)) }); }; const up = () => { dragRef.current = null; window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); }; window.addEventListener("mousemove", move); window.addEventListener("mouseup", up); };
   const apply = async () => { if (!item) return; setBusy(true); setBlurred(await blurOneImage(item, boxes, blurStrength)); setBusy(false); };
-  if (!item) return <ToolLayout goHome={goHome} side={<div><h2 className="text-center text-2xl font-black">가리기 설정</h2></div>}><UploadBox title="개인정보 가리기" desc="가릴 박스를 직접 드래그하고 크기를 조절해 민감한 영역을 블러 처리합니다." icon={<Lock size={46} />} onFiles={handleFiles} /></ToolLayout>;
+  if (!item) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">가리기 설정</h2><button onClick={addBox} className="w-full rounded-2xl bg-blue-600 px-4 py-3 font-black text-white">+ 가릴 박스 추가</button><div><div className="mb-2 flex justify-between font-black"><span>흐림 강도</span><span>{blurStrength}px</span></div><input type="range" min={4} max={32} value={blurStrength} onChange={(e) => setBlurStrength(Number(e.target.value))} className="w-full" /></div><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 적용 가능</button></div>}><UploadBox title="개인정보 가리기" desc="가릴 박스를 직접 드래그하고 크기를 조절해 민감한 영역을 블러 처리합니다." icon={<Lock size={46} />} onFiles={handleFiles} /></ToolLayout>;
   return <ToolLayout goHome={goHome} side={<div className="space-y-5"><h2 className="text-center text-2xl font-black">가리기 설정</h2><SidebarPreview title="가리기 미리보기" items={[item]} /><button onClick={addBox} className="w-full rounded-2xl bg-blue-600 px-4 py-3 font-black text-white">+ 가릴 박스 추가</button>{active && <div className="rounded-2xl border p-3"><p className="mb-3 font-black">선택 박스 세부 조절</p><div className="grid grid-cols-2 gap-2"><label className="text-xs font-bold">가로 %<input value={Math.round(active.width)} onChange={(e) => update(active.id, { width: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label><label className="text-xs font-bold">세로 %<input value={Math.round(active.height)} onChange={(e) => update(active.id, { height: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label></div></div>}<div><div className="mb-2 flex justify-between font-black"><span>흐림 강도</span><span>{blurStrength}px</span></div><input type="range" min={4} max={32} value={blurStrength} onChange={(e) => setBlurStrength(Number(e.target.value))} className="w-full" /></div><button onClick={apply} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "처리 중..." : "개인정보 가리기"}</button></div>}><ToolHeader title="개인정보 가리기" sub={`${item.file.name} · ${item.width}×${item.height}`} onAdd={() => fileRef.current?.click()} /><input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-5 xl:grid-cols-2"><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">원본 이미지</p><img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" /></div><div className="rounded-3xl bg-white p-4"><div className="mb-3 flex justify-between"><p className="font-black">블러 영역 편집</p><button onClick={addBox} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">+ 박스 추가</button></div><div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50"><img src={item.previewUrl} className="max-h-full max-w-full object-contain" />{boxes.map((box, index) => <div key={box.id} onMouseDown={(e) => startDrag(e, box, "move")} className={`absolute cursor-move rounded-2xl border-2 border-dashed backdrop-blur-md ${active?.id === box.id ? "border-blue-600 bg-blue-500/25" : "border-blue-400 bg-blue-400/20"}`} style={{ left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%` }}><span className="absolute -left-2 -top-2 rounded-full bg-blue-600 px-2 py-1 text-xs font-black text-white">{index + 1}</span><button onClick={(e) => { e.stopPropagation(); setBoxes((p) => p.length > 1 ? p.filter((v) => v.id !== box.id) : p); }} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow">×</button><div onMouseDown={(e) => startDrag(e, box, "resize")} className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600" /></div>)}</div>{blurred && <a href={blurred.url} download={blurred.downloadName} className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white">가린 이미지 다운로드</a>}</div></div></ToolLayout>;
 }
 
