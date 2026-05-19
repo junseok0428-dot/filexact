@@ -782,44 +782,128 @@ function TrustCard({ icon, title, desc }: { icon: React.ReactNode; title: string
 }
 
 function GuideSection() {
-  const guides = [
+  type GuideArticle = {
+    category: string;
+    title: string;
+    desc: string;
+    tag: string;
+    targetTool: string;
+    steps: string[];
+    tips: string[];
+  };
+
+  const guides: GuideArticle[] = [
     {
       category: "이력서·취업",
       title: "이력서 사진 500KB 이하로 줄이는 법",
       desc: "채용 사이트 업로드 기준에 맞춰 사진 용량을 줄이고 JPG로 정리하는 방법을 안내합니다.",
       tag: "이미지 압축",
+      targetTool: "이미지 압축 · JPG로 변환",
+      steps: [
+        "이력서 사진 파일을 JPG, PNG, WebP 중 하나로 준비합니다.",
+        "파일이 PNG나 WebP라면 먼저 JPG로 변환해 제출 호환성을 높입니다.",
+        "이미지 압축 도구에서 목표 용량을 500KB로 선택합니다.",
+        "압축 결과의 용량과 해상도를 확인한 뒤 다운로드합니다.",
+        "채용 사이트에 업로드하기 전 사진이 흐려지지 않았는지 다시 열어 확인합니다.",
+      ],
+      tips: [
+        "증명사진은 얼굴 윤곽과 배경 경계가 중요하므로 과도한 압축은 피하는 것이 좋습니다.",
+        "사진 원본이 너무 크면 압축 전에 긴 변을 800~1200px 정도로 줄이면 안정적입니다.",
+      ],
     },
     {
       category: "청약·주거",
       title: "청약 서류 PDF 용량 줄이는 법",
       desc: "스캔 서류와 캡처 이미지를 제출 가능한 PDF 용량으로 정리하는 흐름을 설명합니다.",
       tag: "PDF 변환",
+      targetTool: "이미지 압축 · 이미지 PDF 변환",
+      steps: [
+        "등본, 가족관계증명서, 소득서류 등 제출할 이미지를 준비합니다.",
+        "각 이미지에서 글자와 직인이 읽히는지 먼저 확인합니다.",
+        "이미지 압축 도구에서 1MB 또는 2MB 기준으로 용량을 줄입니다.",
+        "이미지 PDF 변환 도구에 서류 순서대로 이미지를 추가합니다.",
+        "PDF 미리보기에서 페이지 순서와 방향을 확인한 뒤 다운로드합니다.",
+      ],
+      tips: [
+        "서류는 용량보다 가독성이 더 중요하므로 글자가 뭉개지면 목표 용량을 조금 높여 다시 저장하세요.",
+        "공고문에서 파일 개수와 전체 용량 제한을 함께 확인해야 제출 실패를 줄일 수 있습니다.",
+      ],
     },
     {
       category: "공공기관",
       title: "주민등록등본 이미지 PDF로 만드는 법",
       desc: "등본, 가족관계증명서 같은 이미지 파일을 한 개의 PDF로 묶는 방법을 정리합니다.",
       tag: "이미지 PDF",
+      targetTool: "이미지 PDF 변환 · 개인정보 가리기",
+      steps: [
+        "주민등록등본 이미지를 스캔하거나 캡처 파일로 준비합니다.",
+        "제출에 필요 없는 주민등록번호 뒷자리 등 민감정보가 있는지 확인합니다.",
+        "필요하면 개인정보 가리기 도구로 민감한 부분을 먼저 블러 처리합니다.",
+        "이미지 PDF 변환에서 A4와 세로 방향을 선택합니다.",
+        "전체 보이기 옵션으로 문서가 잘리지 않는지 확인하고 PDF를 만듭니다.",
+      ],
+      tips: [
+        "문서 가장자리가 잘리면 ‘꽉 채우기’보다 ‘전체 보이기’를 선택하는 것이 안전합니다.",
+        "제출 전 PDF를 다시 열어 모든 페이지가 포함됐는지 확인하세요.",
+      ],
     },
     {
       category: "첨부파일 제한",
       title: "공공기관 첨부파일 2MB 이하 맞추는 법",
       desc: "파일 업로드 실패를 줄이기 위해 이미지 크기와 용량을 함께 조절하는 기준을 안내합니다.",
       tag: "용량 제한",
+      targetTool: "이미지 크기 조절 · 이미지 압축",
+      steps: [
+        "제출 사이트의 첨부파일 용량 제한이 2MB인지 먼저 확인합니다.",
+        "사진 원본이 너무 크면 이미지 크기 조절에서 긴 변을 1200~1600px 정도로 줄입니다.",
+        "이미지 압축 도구에서 목표 용량을 2MB 이하로 설정합니다.",
+        "결과 파일이 2MB보다 살짝 낮은 1.8~1.9MB 수준인지 확인합니다.",
+        "파일명에 특수문자나 너무 긴 문구가 있으면 간단히 정리한 뒤 업로드합니다.",
+      ],
+      tips: [
+        "용량이 딱 2MB에 가까우면 사이트마다 계산 방식 차이로 업로드가 실패할 수 있습니다.",
+        "문서 사진은 선명도와 글자 가독성을 확인한 뒤 제출하는 것이 좋습니다.",
+      ],
     },
     {
       category: "모바일 사진",
       title: "아이폰 사진 용량 줄여서 제출하는 법",
       desc: "아이폰 사진을 제출용 JPG 파일로 변환하고 용량을 낮추는 과정을 쉽게 설명합니다.",
       tag: "모바일",
+      targetTool: "JPG로 변환 · 이미지 압축",
+      steps: [
+        "아이폰 사진 앱에서 제출할 사진을 파일로 저장하거나 브라우저에서 바로 선택합니다.",
+        "HEIC 형식이거나 업로드가 안 되는 경우 JPG로 변환합니다.",
+        "원본 사진이 너무 크면 이미지 크기 조절로 가로폭을 줄입니다.",
+        "이미지 압축에서 제출 사이트 기준에 맞는 목표 용량을 선택합니다.",
+        "다운로드한 JPG 파일을 다시 열어 깨짐이 없는지 확인합니다.",
+      ],
+      tips: [
+        "아이폰 사진은 원본 해상도가 높아 용량이 크게 나오는 경우가 많습니다.",
+        "인물 사진은 얼굴이 흐려지지 않도록 압축 후 미리보기를 꼭 확인하세요.",
+      ],
     },
     {
       category: "모바일 사진",
       title: "갤럭시 사진을 PDF 파일로 바꾸는 법",
       desc: "갤럭시에서 촬영한 서류 사진을 PDF 제출 파일로 만드는 방법을 안내합니다.",
       tag: "PDF 만들기",
+      targetTool: "이미지 잘라내기 · 이미지 PDF 변환",
+      steps: [
+        "갤럭시 카메라로 서류 전체가 보이도록 촬영합니다.",
+        "불필요한 바닥이나 배경이 많다면 이미지 잘라내기로 문서 영역만 정리합니다.",
+        "여러 장의 서류가 있다면 이미지 PDF 변환 도구에 순서대로 추가합니다.",
+        "페이지 크기는 A4, 맞춤 방식은 전체 보이기를 기본으로 선택합니다.",
+        "PDF 미리보기에서 글자와 페이지 순서를 확인한 뒤 다운로드합니다.",
+      ],
+      tips: [
+        "그림자가 많으면 글자가 흐려질 수 있으니 밝은 곳에서 촬영하는 것이 좋습니다.",
+        "촬영 각도가 기울어진 문서는 제출 전 잘라내기와 회전 기능으로 정리해 주세요.",
+      ],
     },
   ];
+
+  const [selectedGuide, setSelectedGuide] = useState<GuideArticle | null>(null);
 
   return (
     <section className="bg-slate-50 px-4 py-12 md:py-16">
@@ -837,7 +921,10 @@ function GuideSection() {
               </p>
             </div>
           </div>
-          <button className="w-fit cursor-pointer rounded-full border bg-white px-5 py-2 text-sm font-black text-slate-700 hover:border-blue-500 hover:text-blue-600">
+          <button
+            onClick={() => setSelectedGuide(guides[0])}
+            className="w-fit cursor-pointer rounded-full border bg-white px-5 py-2 text-sm font-black text-slate-700 hover:border-blue-500 hover:text-blue-600"
+          >
             전체 가이드 보기
           </button>
         </div>
@@ -846,7 +933,7 @@ function GuideSection() {
           {guides.map((guide) => (
             <article
               key={guide.title}
-              className="group cursor-pointer rounded-3xl border border-slate-950 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+              className="group rounded-3xl border border-slate-950 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
             >
               <div className="mb-4 flex items-center justify-between gap-3">
                 <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-600">{guide.category}</span>
@@ -854,13 +941,73 @@ function GuideSection() {
               </div>
               <h3 className="text-lg font-black leading-7 group-hover:text-blue-600">{guide.title}</h3>
               <p className="mt-3 text-sm leading-6 text-slate-500">{guide.desc}</p>
-              <div className="mt-5 inline-flex items-center gap-2 text-sm font-black text-blue-600">
+              <button
+                onClick={() => setSelectedGuide(guide)}
+                className="mt-5 inline-flex cursor-pointer items-center gap-2 text-sm font-black text-blue-600 hover:text-violet-600"
+              >
                 자세히 보기 <ArrowRight size={16} />
-              </div>
+              </button>
             </article>
           ))}
         </div>
       </div>
+
+      {selectedGuide && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/55 px-4 py-6">
+          <article className="max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8">
+            <div className="flex items-start justify-between gap-4 border-b pb-5">
+              <div>
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-600">{selectedGuide.category}</span>
+                  <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-600">{selectedGuide.tag}</span>
+                </div>
+                <h3 className="text-2xl font-black leading-8 md:text-3xl">{selectedGuide.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-500 md:text-base">{selectedGuide.desc}</p>
+              </div>
+              <button
+                onClick={() => setSelectedGuide(null)}
+                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-xl font-black hover:bg-slate-200"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-blue-50 p-4 text-sm font-bold leading-6 text-blue-700">
+              추천 사용 도구: {selectedGuide.targetTool}
+            </div>
+
+            <div className="mt-7">
+              <h4 className="text-lg font-black">진행 순서</h4>
+              <ol className="mt-4 space-y-3">
+                {selectedGuide.steps.map((step, index) => (
+                  <li key={step} className="flex gap-3 rounded-2xl border bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="mt-7">
+              <h4 className="text-lg font-black">제출 전 체크 포인트</h4>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {selectedGuide.tips.map((tip) => (
+                  <div key={tip} className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 text-sm font-bold leading-6 text-slate-700">
+                    {tip}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setSelectedGuide(null)}
+              className="mt-7 w-full cursor-pointer rounded-2xl bg-slate-950 px-5 py-4 font-black text-white hover:bg-slate-800"
+            >
+              가이드 닫기
+            </button>
+          </article>
+        </div>
+      )}
     </section>
   );
 }
@@ -1328,488 +1475,22 @@ async function createPdfFromImages(items: UploadedImage[], pageSize: "a4" | "ima
 }
 
 function PhotoEditorScreen({ goHome }: { goHome: () => void }) {
-  const [item, setItem] = useState<UploadedImage | null>(null);
-  const [edited, setEdited] = useState<ResultImage | null>(null);
-  const [rotation, setRotation] = useState(0);
-  const [brightness, setBrightness] = useState(100);
-  const [contrast, setContrast] = useState(100);
-  const [saturation, setSaturation] = useState(100);
-  const [filterPreset, setFilterPreset] = useState<FilterPreset>("none");
-  const [flipX, setFlipX] = useState(false);
-  const [flipY, setFlipY] = useState(false);
-  const [textBoxes, setTextBoxes] = useState<TextBox[]>([]);
-  const [activeTextBoxId, setActiveTextBoxId] = useState("");
-  const [borderWidth, setBorderWidth] = useState(0);
-  const [borderColor, setBorderColor] = useState("#2563eb");
-  const [saveFormat, setSaveFormat] = useState<"jpeg" | "png">("jpeg");
-  const [busy, setBusy] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  const dragRef = useRef<{
-    id: string;
-    mode: "move" | "resize";
-    startX: number;
-    startY: number;
-    box: TextBox;
-  } | null>(null);
-
+  const [item, setItem] = useState<UploadedImage | null>(null); const [edited, setEdited] = useState<ResultImage | null>(null); const [rotation, setRotation] = useState(0); const [brightness, setBrightness] = useState(100); const [contrast, setContrast] = useState(100); const [saturation, setSaturation] = useState(100); const [filterPreset, setFilterPreset] = useState<FilterPreset>("none"); const [flipX, setFlipX] = useState(false); const [flipY, setFlipY] = useState(false); const [textBoxes, setTextBoxes] = useState<TextBox[]>([]); const [activeTextBoxId, setActiveTextBoxId] = useState(""); const [borderWidth, setBorderWidth] = useState(0); const [borderColor, setBorderColor] = useState("#2563eb"); const [saveFormat, setSaveFormat] = useState<"jpeg" | "png">("jpeg"); const [busy, setBusy] = useState(false); const fileInputRef = useRef<HTMLInputElement | null>(null); const previewRef = useRef<HTMLDivElement | null>(null); const dragRef = useRef<{ id: string; mode: "move" | "resize"; startX: number; startY: number; box: TextBox } | null>(null);
   const active = textBoxes.find((b) => b.id === activeTextBoxId) || textBoxes[0];
-
-  const preset =
-    filterPreset === "gray"
-      ? "grayscale(100%)"
-      : filterPreset === "sepia"
-        ? "sepia(80%)"
-        : filterPreset === "warm"
-          ? "sepia(25%) saturate(120%) brightness(105%)"
-          : filterPreset === "cool"
-            ? "hue-rotate(190deg) saturate(115%)"
-            : "";
-
-  const imgStyle = {
-    transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`,
-    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) ${preset}`,
-  };
-
-  const addText = () => {
-    const b = { id: makeId(), text: "텍스트", x: 35, y: 42, width: 30, height: 12 };
-    setTextBoxes((p) => [...p, b]);
-    setActiveTextBoxId(b.id);
-  };
-
-  const updateBox = (id: string, patch: Partial<TextBox>) =>
-    setTextBoxes((p) =>
-      p.map((b) =>
-        b.id === id
-          ? {
-              ...b,
-              ...patch,
-              x: Math.min(95, Math.max(0, patch.x ?? b.x)),
-              y: Math.min(95, Math.max(0, patch.y ?? b.y)),
-              width: Math.min(100, Math.max(8, patch.width ?? b.width)),
-              height: Math.min(100, Math.max(6, patch.height ?? b.height)),
-            }
-          : b
-      )
-    );
-
-  const startDrag = (e: React.MouseEvent<HTMLDivElement>, box: TextBox, mode: "move" | "resize") => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setActiveTextBoxId(box.id);
-    dragRef.current = { id: box.id, mode, startX: e.clientX, startY: e.clientY, box };
-
-    const move = (ev: MouseEvent) => {
-      const state = dragRef.current;
-      const rect = previewRef.current?.getBoundingClientRect();
-      if (!state || !rect) return;
-
-      const dx = ((ev.clientX - state.startX) / rect.width) * 100;
-      const dy = ((ev.clientY - state.startY) / rect.height) * 100;
-
-      if (state.mode === "move") {
-        updateBox(state.id, {
-          x: Math.min(100 - state.box.width, Math.max(0, state.box.x + dx)),
-          y: Math.min(100 - state.box.height, Math.max(0, state.box.y + dy)),
-        });
-      } else {
-        updateBox(state.id, {
-          width: Math.min(100 - state.box.x, Math.max(8, state.box.width + dx)),
-          height: Math.min(100 - state.box.y, Math.max(6, state.box.height + dy)),
-        });
-      }
-    };
-
-    const up = () => {
-      dragRef.current = null;
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-    };
-
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-  };
-
-  const handleFiles = async (files?: FileList | null) => {
-    const [next] = await readFiles(files);
-    if (next) setItem(next);
-    setEdited(null);
-  };
-
-  const apply = async () => {
-    if (!item) return;
-    setBusy(true);
-    setEdited(
-      await editOneImage(item, {
-        rotation,
-        brightness,
-        contrast,
-        saturation,
-        filterPreset,
-        flipX,
-        flipY,
-        textBoxes,
-        borderWidth,
-        borderColor,
-        saveFormat,
-      })
-    );
-    setBusy(false);
-  };
-
-  const side = (
-    <div className="space-y-5">
-      <EditorControls
-        filterPreset={filterPreset}
-        setFilterPreset={setFilterPreset}
-        rotation={rotation}
-        setRotation={setRotation}
-        flipX={flipX}
-        setFlipX={setFlipX}
-        flipY={flipY}
-        setFlipY={setFlipY}
-        brightness={brightness}
-        setBrightness={setBrightness}
-        contrast={contrast}
-        setContrast={setContrast}
-        saturation={saturation}
-        setSaturation={setSaturation}
-        addText={addText}
-        active={active}
-        updateBox={updateBox}
-        borderWidth={borderWidth}
-        setBorderWidth={setBorderWidth}
-        borderColor={borderColor}
-        setBorderColor={setBorderColor}
-        saveFormat={saveFormat}
-        setSaveFormat={setSaveFormat}
-      />
-
-      <button
-        onClick={apply}
-        disabled={busy || !item}
-        className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {!item ? "이미지 선택 후 편집 가능" : busy ? "적용 중..." : "편집 적용"}
-      </button>
-    </div>
-  );
-
-  if (!item) {
-    return (
-      <ToolLayout goHome={goHome} side={side}>
-        <UploadBox
-          title="간단 포토 에디터"
-          desc="필터, 회전, 반전, 텍스트, 프레임까지 브라우저에서 바로 편집합니다."
-          icon={<Wand2 size={46} />}
-          onFiles={handleFiles}
-        />
-      </ToolLayout>
-    );
-  }
-
-  return (
-    <ToolLayout goHome={goHome} side={side}>
-      <ToolHeader
-        title="간단 포토 에디터"
-        sub={`${item.file.name} · ${item.width}×${item.height}`}
-        onAdd={() => fileInputRef.current?.click()}
-      />
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => handleFiles(e.target.files)}
-      />
-
-      <div className="grid gap-5 xl:grid-cols-2">
-        <div className="rounded-3xl bg-white p-4">
-          <p className="mb-3 font-black">원본 이미지</p>
-          <img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" />
-        </div>
-
-        <div className="rounded-3xl bg-white p-4">
-          <div className="mb-3 flex justify-between">
-            <p className="font-black">편집 미리보기</p>
-            <button onClick={addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">
-              + 텍스트 추가
-            </button>
-          </div>
-
-          <div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50">
-            <img src={item.previewUrl} className="max-h-full max-w-full object-contain" style={imgStyle} />
-
-            {borderWidth > 0 && (
-              <div
-                className="pointer-events-none absolute inset-6 rounded-2xl"
-                style={{ border: `${borderWidth}px solid ${borderColor}` }}
-              />
-            )}
-
-            {textBoxes.map((box, index) => (
-              <div
-                key={box.id}
-                onMouseDown={(e) => startDrag(e, box, "move")}
-                className={`absolute cursor-move rounded-xl border-2 border-dashed bg-black/25 px-2 py-1 text-center font-black text-white ${
-                  active?.id === box.id ? "border-blue-600" : "border-white/70"
-                }`}
-                style={{
-                  left: `${box.x}%`,
-                  top: `${box.y}%`,
-                  width: `${box.width}%`,
-                  height: `${box.height}%`,
-                  fontSize: `${Math.max(12, box.height * 1.5)}px`,
-                }}
-              >
-                <span className="pointer-events-none flex h-full items-center justify-center">
-                  {box.text || `텍스트 ${index + 1}`}
-                </span>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTextBoxes((p) => p.filter((v) => v.id !== box.id));
-                  }}
-                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow"
-                >
-                  ×
-                </button>
-
-                <div
-                  onMouseDown={(e) => startDrag(e, box, "resize")}
-                  className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600"
-                />
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
-            텍스트 박스를 드래그해 옮기고, 오른쪽 아래 손잡이로 크기를 조절하세요.
-          </p>
-
-          {edited && (
-            <a
-              href={edited.url}
-              download={edited.downloadName}
-              className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white"
-            >
-              편집 이미지 다운로드
-            </a>
-          )}
-        </div>
-      </div>
-    </ToolLayout>
-  );
+  const preset = filterPreset === "gray" ? "grayscale(100%)" : filterPreset === "sepia" ? "sepia(80%)" : filterPreset === "warm" ? "sepia(25%) saturate(120%) brightness(105%)" : filterPreset === "cool" ? "hue-rotate(190deg) saturate(115%)" : "";
+  const imgStyle = { transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`, filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) ${preset}` };
+  const addText = () => { const b = { id: makeId(), text: "텍스트", x: 35, y: 42, width: 30, height: 12 }; setTextBoxes((p) => [...p, b]); setActiveTextBoxId(b.id); };
+  const updateBox = (id: string, patch: Partial<TextBox>) => setTextBoxes((p) => p.map((b) => b.id === id ? { ...b, ...patch, x: Math.min(95, Math.max(0, patch.x ?? b.x)), y: Math.min(95, Math.max(0, patch.y ?? b.y)), width: Math.min(100, Math.max(8, patch.width ?? b.width)), height: Math.min(100, Math.max(6, patch.height ?? b.height)) } : b));
+  const startDrag = (e: React.MouseEvent<HTMLDivElement>, box: TextBox, mode: "move" | "resize") => { e.preventDefault(); e.stopPropagation(); setActiveTextBoxId(box.id); dragRef.current = { id: box.id, mode, startX: e.clientX, startY: e.clientY, box }; const move = (ev: MouseEvent) => { const state = dragRef.current; const rect = previewRef.current?.getBoundingClientRect(); if (!state || !rect) return; const dx = ((ev.clientX - state.startX) / rect.width) * 100; const dy = ((ev.clientY - state.startY) / rect.height) * 100; if (state.mode === "move") updateBox(state.id, { x: Math.min(100 - state.box.width, Math.max(0, state.box.x + dx)), y: Math.min(100 - state.box.height, Math.max(0, state.box.y + dy)) }); else updateBox(state.id, { width: Math.min(100 - state.box.x, Math.max(8, state.box.width + dx)), height: Math.min(100 - state.box.y, Math.max(6, state.box.height + dy)) }); }; const up = () => { dragRef.current = null; window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); }; window.addEventListener("mousemove", move); window.addEventListener("mouseup", up); };
+  const handleFiles = async (files?: FileList | null) => { const [next] = await readFiles(files); if (next) setItem(next); setEdited(null); };
+  const apply = async () => { if (!item) return; setBusy(true); setEdited(await editOneImage(item, { rotation, brightness, contrast, saturation, filterPreset, flipX, flipY, textBoxes, borderWidth, borderColor, saveFormat })); setBusy(false); };
+  if (!item) return <ToolLayout goHome={goHome} side={<div className="space-y-5"><EditorControls filterPreset={filterPreset} setFilterPreset={setFilterPreset} rotation={rotation} setRotation={setRotation} flipX={flipX} setFlipX={setFlipX} flipY={flipY} setFlipY={setFlipY} brightness={brightness} setBrightness={setBrightness} contrast={contrast} setContrast={setContrast} saturation={saturation} setSaturation={setSaturation} addText={addText} active={active} updateBox={updateBox} borderWidth={borderWidth} setBorderWidth={setBorderWidth} borderColor={borderColor} setBorderColor={setBorderColor} saveFormat={saveFormat} setSaveFormat={setSaveFormat} /><button disabled className="w-full cursor-not-allowed rounded-2xl bg-blue-600 px-6 py-4 font-black text-white opacity-50">이미지 선택 후 편집 가능</button></div>}><UploadBox title="간단 포토 에디터" desc="필터, 회전, 반전, 텍스트, 프레임까지 브라우저에서 바로 편집합니다." icon={<Wand2 size={46} />} onFiles={handleFiles} /></ToolLayout>;
+  return <ToolLayout goHome={goHome} side={<div className="space-y-5"><EditorControls filterPreset={filterPreset} setFilterPreset={setFilterPreset} rotation={rotation} setRotation={setRotation} flipX={flipX} setFlipX={setFlipX} flipY={flipY} setFlipY={setFlipY} brightness={brightness} setBrightness={setBrightness} contrast={contrast} setContrast={setContrast} saturation={saturation} setSaturation={setSaturation} addText={addText} active={active} updateBox={updateBox} borderWidth={borderWidth} setBorderWidth={setBorderWidth} borderColor={borderColor} setBorderColor={setBorderColor} saveFormat={saveFormat} setSaveFormat={setSaveFormat} /><button onClick={apply} disabled={busy} className="w-full rounded-2xl bg-blue-600 px-6 py-4 font-black text-white">{busy ? "적용 중..." : "편집 적용"}</button></div>}><ToolHeader title="간단 포토 에디터" sub={`${item.file.name} · ${item.width}×${item.height}`} onAdd={() => fileInputRef.current?.click()} /><input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFiles(e.target.files)} /><div className="grid gap-5 xl:grid-cols-2"><div className="rounded-3xl bg-white p-4"><p className="mb-3 font-black">원본 이미지</p><img src={item.previewUrl} className="h-[520px] w-full rounded-2xl bg-slate-50 object-contain" /></div><div className="rounded-3xl bg-white p-4"><div className="mb-3 flex justify-between"><p className="font-black">편집 미리보기</p><button onClick={addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">+ 텍스트 추가</button></div><div ref={previewRef} className="relative flex h-[520px] select-none items-center justify-center overflow-hidden rounded-2xl bg-slate-50"><img src={item.previewUrl} className="max-h-full max-w-full object-contain" style={imgStyle} />{borderWidth > 0 && <div className="pointer-events-none absolute inset-6 rounded-2xl" style={{ border: `${borderWidth}px solid ${borderColor}` }} />}{textBoxes.map((box, index) => <div key={box.id} onMouseDown={(e) => startDrag(e, box, "move")} className={`absolute cursor-move rounded-xl border-2 border-dashed bg-black/25 px-2 py-1 text-center font-black text-white ${active?.id === box.id ? "border-blue-600" : "border-white/70"}`} style={{ left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%`, fontSize: `${Math.max(12, box.height * 1.5)}px` }}><span className="pointer-events-none flex h-full items-center justify-center">{box.text || `텍스트 ${index + 1}`}</span><button onClick={(e) => { e.stopPropagation(); setTextBoxes((p) => p.filter((v) => v.id !== box.id)); }} className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg font-black text-red-600 shadow">×</button><div onMouseDown={(e) => startDrag(e, box, "resize")} className="absolute bottom-0 right-0 h-5 w-5 cursor-se-resize rounded-tl-xl bg-blue-600" /></div>)}</div><p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">텍스트 박스를 드래그해 옮기고, 오른쪽 아래 손잡이로 크기를 조절하세요.</p>{edited && <a href={edited.url} download={edited.downloadName} className="mt-4 inline-flex w-full justify-center rounded-2xl bg-slate-950 px-4 py-3 font-black text-white">편집 이미지 다운로드</a>}</div></div></ToolLayout>;
 }
 
-function EditorControls(props: {
-  filterPreset: FilterPreset;
-  setFilterPreset: (value: FilterPreset) => void;
-  rotation: number;
-  setRotation: (value: number) => void;
-  flipX: boolean;
-  setFlipX: React.Dispatch<React.SetStateAction<boolean>>;
-  flipY: boolean;
-  setFlipY: React.Dispatch<React.SetStateAction<boolean>>;
-  brightness: number;
-  setBrightness: (value: number) => void;
-  contrast: number;
-  setContrast: (value: number) => void;
-  saturation: number;
-  setSaturation: (value: number) => void;
-  addText: () => void;
-  active?: TextBox;
-  updateBox: (id: string, patch: Partial<TextBox>) => void;
-  borderWidth: number;
-  setBorderWidth: (value: number) => void;
-  borderColor: string;
-  setBorderColor: (value: string) => void;
-  saveFormat: "jpeg" | "png";
-  setSaveFormat: (value: "jpeg" | "png") => void;
-}) {
-  const filters: [FilterPreset, string][] = [
-    ["none", "원본"],
-    ["gray", "흑백"],
-    ["sepia", "세피아"],
-    ["warm", "따뜻하게"],
-    ["cool", "차갑게"],
-  ];
-
-  return (
-    <>
-      <h2 className="text-center text-2xl font-black">편집 설정</h2>
-
-      <div>
-        <p className="mb-2 font-black">필터</p>
-        <div className="grid grid-cols-2 gap-2">
-          {filters.map(([value, label]) => (
-            <button
-              key={value}
-              onClick={() => props.setFilterPreset(value)}
-              className={`rounded-2xl border px-3 py-2 font-black ${
-                props.filterPreset === value ? "border-blue-500 bg-blue-50" : "bg-white"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="mb-2 font-black">회전</p>
-        <div className="grid grid-cols-4 gap-2">
-          {[0, 90, 180, 270].map((value) => (
-            <button
-              key={value}
-              onClick={() => props.setRotation(value)}
-              className={`rounded-xl border px-2 py-2 font-black ${
-                props.rotation === value ? "border-blue-500 bg-blue-50" : "bg-white"
-              }`}
-            >
-              {value}°
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => props.setFlipX((prev) => !prev)}
-            className={`rounded-2xl border px-3 py-2 font-black ${
-              props.flipX ? "border-blue-500 bg-blue-50" : "bg-white"
-            }`}
-          >
-            좌우 반전
-          </button>
-          <button
-            onClick={() => props.setFlipY((prev) => !prev)}
-            className={`rounded-2xl border px-3 py-2 font-black ${
-              props.flipY ? "border-blue-500 bg-blue-50" : "bg-white"
-            }`}
-          >
-            상하 반전
-          </button>
-        </div>
-      </div>
-
-      {[
-        ["밝기", props.brightness, props.setBrightness, 50, 150],
-        ["대비", props.contrast, props.setContrast, 50, 150],
-        ["채도", props.saturation, props.setSaturation, 0, 200],
-      ].map(([label, value, setter, min, max]) => (
-        <div key={label as string}>
-          <div className="mb-2 flex justify-between font-black">
-            <span>{label as string}</span>
-            <span>{value as number}%</span>
-          </div>
-          <input
-            type="range"
-            min={min as number}
-            max={max as number}
-            value={value as number}
-            onChange={(e) => (setter as (value: number) => void)(Number(e.target.value))}
-            className="w-full"
-          />
-        </div>
-      ))}
-
-      <div className="rounded-2xl border p-3">
-        <div className="mb-3 flex justify-between">
-          <p className="font-black">텍스트 박스</p>
-          <button
-            onClick={props.addText}
-            className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white"
-          >
-            추가
-          </button>
-        </div>
-
-        {props.active ? (
-          <div className="space-y-3">
-            <input
-              value={props.active.text}
-              onChange={(e) => props.updateBox(props.active!.id, { text: e.target.value })}
-              className="w-full rounded-xl border px-3 py-2"
-            />
-
-            <div className="grid grid-cols-2 gap-2">
-              <label className="text-xs font-bold">
-                가로 %
-                <input
-                  type="number"
-                  value={Math.round(props.active.width)}
-                  onChange={(e) => props.updateBox(props.active!.id, { width: Number(e.target.value) })}
-                  className="mt-1 w-full rounded-xl border px-3 py-2"
-                />
-              </label>
-              <label className="text-xs font-bold">
-                세로 %
-                <input
-                  type="number"
-                  value={Math.round(props.active.height)}
-                  onChange={(e) => props.updateBox(props.active!.id, { height: Number(e.target.value) })}
-                  className="mt-1 w-full rounded-xl border px-3 py-2"
-                />
-              </label>
-            </div>
-          </div>
-        ) : (
-          <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">
-            텍스트 추가를 누르세요.
-          </p>
-        )}
-      </div>
-
-      <div className="rounded-2xl border p-3">
-        <p className="mb-3 font-black">프레임 / 저장</p>
-
-        <div className="mb-2 flex justify-between font-black">
-          <span>테두리 두께</span>
-          <span>{props.borderWidth}px</span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={40}
-          value={props.borderWidth}
-          onChange={(e) => props.setBorderWidth(Number(e.target.value))}
-          className="w-full"
-        />
-
-        <div className="mt-3 flex items-center justify-between">
-          <span className="font-bold">테두리 색상</span>
-          <input
-            type="color"
-            value={props.borderColor}
-            onChange={(e) => props.setBorderColor(e.target.value)}
-          />
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => props.setSaveFormat("jpeg")}
-            className={`rounded-2xl border px-3 py-2 font-black ${
-              props.saveFormat === "jpeg" ? "border-blue-500 bg-blue-50" : "bg-white"
-            }`}
-          >
-            JPG 저장
-          </button>
-          <button
-            onClick={() => props.setSaveFormat("png")}
-            className={`rounded-2xl border px-3 py-2 font-black ${
-              props.saveFormat === "png" ? "border-blue-500 bg-blue-50" : "bg-white"
-            }`}
-          >
-            PNG 저장
-          </button>
-        </div>
-      </div>
-    </>
-  );
+function EditorControls(props: any) {
+  const filters: [FilterPreset, string][] = [["none", "원본"], ["gray", "흑백"], ["sepia", "세피아"], ["warm", "따뜻하게"], ["cool", "차갑게"]];
+  return <><h2 className="text-center text-2xl font-black">편집 설정</h2><div><p className="mb-2 font-black">필터</p><div className="grid grid-cols-2 gap-2">{filters.map(([value, label]) => <button key={value} onClick={() => props.setFilterPreset(value)} className={`rounded-2xl border px-3 py-2 font-black ${props.filterPreset === value ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{label}</button>)}</div></div><div><p className="mb-2 font-black">회전</p><div className="grid grid-cols-4 gap-2">{[0, 90, 180, 270].map((v) => <button key={v} onClick={() => props.setRotation(v)} className={`rounded-xl border px-2 py-2 font-black ${props.rotation === v ? "border-blue-500 bg-blue-50" : "bg-white"}`}>{v}°</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><button onClick={() => props.setFlipX((p: boolean) => !p)} className={`rounded-2xl border px-3 py-2 font-black ${props.flipX ? "border-blue-500 bg-blue-50" : "bg-white"}`}>좌우 반전</button><button onClick={() => props.setFlipY((p: boolean) => !p)} className={`rounded-2xl border px-3 py-2 font-black ${props.flipY ? "border-blue-500 bg-blue-50" : "bg-white"}`}>상하 반전</button></div></div>{[["밝기", props.brightness, props.setBrightness, 50, 150], ["대비", props.contrast, props.setContrast, 50, 150], ["채도", props.saturation, props.setSaturation, 0, 200]].map(([label, value, setter, min, max]) => <div key={label as string}><div className="mb-2 flex justify-between font-black"><span>{label as string}</span><span>{value as number}%</span></div><input type="range" min={min as number} max={max as number} value={value as number} onChange={(e) => setter(Number(e.target.value))} className="w-full" /></div>)}<div className="rounded-2xl border p-3"><div className="mb-3 flex justify-between"><p className="font-black">텍스트 박스</p><button onClick={props.addText} className="rounded-full bg-blue-600 px-3 py-2 text-xs font-black text-white">추가</button></div>{props.active ? <div className="space-y-3"><input value={props.active.text} onChange={(e) => props.updateBox(props.active.id, { text: e.target.value })} className="w-full rounded-xl border px-3 py-2" /><div className="grid grid-cols-2 gap-2"><label className="text-xs font-bold">가로 %<input type="number" value={Math.round(props.active.width)} onChange={(e) => props.updateBox(props.active.id, { width: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label><label className="text-xs font-bold">세로 %<input type="number" value={Math.round(props.active.height)} onChange={(e) => props.updateBox(props.active.id, { height: Number(e.target.value) })} className="mt-1 w-full rounded-xl border px-3 py-2" /></label></div></div> : <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">텍스트 추가를 누르세요.</p>}</div><div className="rounded-2xl border p-3"><p className="mb-3 font-black">프레임 / 저장</p><div className="mb-2 flex justify-between font-black"><span>테두리 두께</span><span>{props.borderWidth}px</span></div><input type="range" min={0} max={40} value={props.borderWidth} onChange={(e) => props.setBorderWidth(Number(e.target.value))} className="w-full" /><div className="mt-3 flex items-center justify-between"><span className="font-bold">테두리 색상</span><input type="color" value={props.borderColor} onChange={(e) => props.setBorderColor(e.target.value)} /></div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={() => props.setSaveFormat("jpeg")} className={`rounded-2xl border px-3 py-2 font-black ${props.saveFormat === "jpeg" ? "border-blue-500 bg-blue-50" : "bg-white"}`}>JPG 저장</button><button onClick={() => props.setSaveFormat("png")} className={`rounded-2xl border px-3 py-2 font-black ${props.saveFormat === "png" ? "border-blue-500 bg-blue-50" : "bg-white"}`}>PNG 저장</button></div></div></>;
 }
 
 function WatermarkScreen({ goHome }: { goHome: () => void }) {
